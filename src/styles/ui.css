@@ -26,7 +26,7 @@
 }
 .btn:hover {
   --b-bd: var(--fg);
-  --b-bg: rgba(236, 230, 218, 0.05);
+  --b-bg: rgba(var(--fg-rgb), 0.05);
 }
 .btn:active {
   transform: translateY(1px);
@@ -38,12 +38,12 @@
 }
 .btn--primary {
   --b-bg: var(--fg);
-  --b-fg: #121314;
+  --b-fg: var(--on-fg);
   --b-bd: var(--fg);
 }
 .btn--primary:hover {
-  --b-bg: #fffaf0;
-  --b-bd: #fffaf0;
+  --b-bg: var(--fg-hi);
+  --b-bd: var(--fg-hi);
 }
 .btn--sig {
   --b-bd: var(--sig);
@@ -101,12 +101,12 @@
   border-right: 0;
 }
 .seg-bar__btn:hover:not(:disabled) {
-  background: rgba(236, 230, 218, 0.05);
+  background: rgba(var(--fg-rgb), 0.05);
   color: var(--fg);
 }
 .seg-bar__btn[aria-pressed="true"] {
   background: var(--fg);
-  color: #121314;
+  color: var(--on-fg);
 }
 .seg-bar__btn:disabled {
   opacity: 0.4;
@@ -168,7 +168,7 @@
   height: 6px;
 }
 .tag--draft {
-  color: #f6cb85;
+  color: var(--draft-fg);
   background: rgba(var(--amber-rgb), 0.07);
   border: 1px dashed rgba(var(--amber-rgb), 0.55);
 }
@@ -193,7 +193,7 @@
 /* Bracketed gaps in draft text */
 .slot {
   background: rgba(var(--amber-rgb), 0.1);
-  color: #f6cb85;
+  color: var(--draft-fg);
   border-bottom: 1px dashed rgba(var(--amber-rgb), 0.6);
   padding: 0 3px;
   font-size: 0.94em;
@@ -241,7 +241,7 @@ kbd {
 .crop {
   position: relative;
   border: 1px solid var(--line);
-  background: rgba(23, 25, 26, 0.85);
+  background: rgba(var(--bg-rgb), 0.85);
 }
 .crop::before {
   content: "";
@@ -431,7 +431,7 @@ a.lb:hover {
 }
 .side__brand:hover .side__mark {
   background: var(--sig);
-  color: #062221;
+  color: var(--on-sig);
 }
 .side__who {
   display: flex;
@@ -479,7 +479,7 @@ a.lb:hover {
 .index a {
   position: relative;
   display: grid;
-  grid-template-columns: 9px 26px 1fr;
+  grid-template-columns: 9px 26px 1fr 18px;
   align-items: center;
   gap: 12px;
   min-height: 40px;
@@ -522,8 +522,13 @@ a.lb:hover {
   font-weight: 600;
 }
 
-.side__search {
+.side__tools {
   margin-top: auto;
+  display: flex;
+  gap: 8px;
+}
+.side__search {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -543,6 +548,7 @@ a.lb:hover {
 }
 .side__search kbd {
   margin-left: auto;
+  white-space: nowrap;
 }
 .side__search:hover {
   border-color: var(--sig);
@@ -605,7 +611,7 @@ a.lb:hover {
   align-items: center;
   gap: 10px;
   padding: 0 12px;
-  background: rgba(18, 19, 20, 0.94);
+  background: rgba(var(--bg-rgb), 0.94);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line-2);
@@ -658,7 +664,7 @@ a.lb:hover {
 }
 .mbar__btn[aria-expanded="true"] {
   background: var(--fg);
-  color: #121314;
+  color: var(--on-fg);
 }
 .mbar__progress {
   position: absolute;
@@ -703,4 +709,145 @@ a.lb:hover {
   font-size: 0.72rem;
   color: var(--mute);
   font-weight: 400;
+}
+
+/* ── Icons ───────────────────────────────────────────────── */
+.ico {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.index__icon {
+  display: grid;
+  place-items: center;
+  color: var(--mute);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 0.2s,
+    transform 0.25s var(--ease),
+    color 0.2s;
+}
+.index__icon .ico {
+  width: 16px;
+  height: 16px;
+}
+.index a:hover .index__icon,
+.index a:focus-visible .index__icon,
+.index a[aria-current="true"] .index__icon {
+  opacity: 1;
+  transform: none;
+}
+.index a[aria-current="true"] .index__icon {
+  color: var(--sig);
+}
+.msheet__icon {
+  display: grid;
+  place-items: center;
+  color: var(--mute);
+}
+.msheet a[aria-current="true"] .msheet__icon {
+  color: var(--sig);
+}
+
+/* ── Theme toggle: sun and moon swap with a quarter turn ── */
+.theme-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  min-height: 42px;
+  padding: 0;
+  border: 1px solid var(--line-3);
+  background: transparent;
+  color: var(--fg-2);
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+.theme-btn:hover {
+  border-color: var(--sig);
+  color: var(--fg);
+}
+.theme-btn__icons {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+.theme-btn__icons .ico {
+  position: absolute;
+  inset: 0;
+  transition:
+    opacity 0.3s,
+    transform 0.45s var(--ease);
+}
+/* Show the theme you would switch to. */
+.theme-btn[data-theme-now="dark"] .ico:last-child,
+.theme-btn[data-theme-now="light"] .ico:first-child {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.6);
+}
+.mbar .theme-btn {
+  width: 40px;
+  min-height: 36px;
+  height: 36px;
+}
+
+/* Smooth colour change when switching theme (not on first paint). */
+html.theme-anim,
+html.theme-anim *,
+html.theme-anim *::before,
+html.theme-anim *::after {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    fill 0.35s ease,
+    stroke 0.35s ease !important;
+}
+
+/* Copy-link button beside section titles */
+.sh__titlerow {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+.sh__link {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 0.35em;
+  padding: 0;
+  border: 1px solid var(--line-2);
+  background: transparent;
+  color: var(--mute);
+  opacity: 0;
+  transition:
+    opacity 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+.sh:hover .sh__link,
+.sh__link:focus-visible,
+.sh__link[data-copied] {
+  opacity: 1;
+}
+.sh__link:hover {
+  color: var(--sig);
+  border-color: var(--sig);
+}
+.sh__link[data-copied] {
+  color: var(--sig);
+  border-color: var(--sig);
+}
+.sh__link .ico {
+  width: 16px;
+  height: 16px;
+}
+@media (hover: none) {
+  .sh__link {
+    opacity: 1;
+  }
 }

@@ -1,6 +1,6 @@
 # Zeeshan Malik · portfolio (review draft)
 
-A single-page portfolio drawn as an **engineering drawing set**. Each section is a numbered sheet, the hero is a circuit board with dimension lines and a bill of materials, and every part of the board leads to a sheet.
+A single-page portfolio drawn as an **engineering drawing set**. Each section is a numbered sheet, the hero is a quadrotor drone with dimension lines, balloons and a bill of materials, and every part of the drone leads to a sheet. Light ("paper") and dark ("graphite") themes.
 
 This is a **review draft**. Anything Zeeshan hasn't confirmed carries a visible amber label, `Placeholder · Awaiting Zeeshan approval`, right next to it. The checklist of everything he needs to confirm is in [docs/CONTENT-CHECKLIST.md](docs/CONTENT-CHECKLIST.md).
 
@@ -28,7 +28,9 @@ npm run build
 
 - **A drawing set, not a dashboard.** Square corners, hairline rules, tick-marked section rules, a dot-grid drafting background and a zone-ruled frame. No rounded cards, pills or glows.
 - **Sheet index + title block.** On desktop, a left sidebar lists the seven sheets on a vertical bus whose lit length follows scroll; a title block shows the current sheet, title and revision. On phones, a compact strip shows `03/07 Experience` with an Index sheet.
-- **The board is the navigation.** Processor → About, Memory → Experience, I/O → Projects, Debug → Signal lab, Comms → Contact. Numbered balloons and a bill-of-materials table do the same job. "Inspect system" separates the board into substrate, copper and component layers.
+- **The drone is the navigation.** Flight controller → About, Blackbox logger → Experience, Camera payload → Projects, Debug port → Signal lab, Telemetry radio → Contact. Numbered balloons with leader lines and a bill-of-materials table do the same job. Hovering a part clears the canopy and lights its wiring. "Inspect system" deconstructs the drone: canopy and rotors lift off, the avionics and wiring are exposed, the frame and battery sit underneath, and the rotors spin up.
+- **Light and dark.** A toggle in the sidebar (or the phone strip, or the command palette) switches between graphite and drafting paper. The choice is remembered; first visits follow the device setting. The oscilloscope stays a dark instrument screen in both.
+- **Small touches.** Sheet icons in the index and palette, a copy-link button on every sheet title, a status strip under the drone (view, selection, rotors, theme), channel icons on the contact pinout, a revision date in the title block from the build date, a quadrotor favicon and a preflight-check startup sequence.
 - **Type.** IBM Plex throughout, like a datasheet: Plex Sans Condensed for titles, Plex Sans for reading, Plex Mono for labels.
 - **Colour.** Graphite, warm off-white, cyan for linework and live signal, amber only for status and draft labels.
 
@@ -36,8 +38,10 @@ npm run build
 
 | Feature | Where | Notes |
 |---|---|---|
-| Interactive circuit board | Sheet 01 | Pointer tilt and light (desktop), trace illumination, numbered balloons, BOM table with the same five controls, "Go to sheet" readout, Escape to clear |
-| Inspect system (exploded view) | Sheet 01, command palette | 3D layer separation with standing labels and a layer key; flat fallback without 3D support |
+| Interactive drone | Sheet 01 | Pointer tilt and light (desktop), wiring illumination, idle-spinning rotors, balloons with leader lines, BOM table with the same five controls, "Go to sheet" readout, status strip, Escape to clear |
+| Inspect system (exploded view) | Sheet 01, command palette | Canopy and rotors lift off, avionics exposed, frame below, rotors spin up; callouts float above; layer key; flat fallback without 3D support |
+| Light / dark mode | Sidebar, phone strip, command palette | Remembered per browser; defaults to the device setting; no flash on load |
+| Copy link to a sheet | Every sheet title | Copies a direct link; confirms with a check mark |
 | Drawing register | Sheet 02 | Area filters with counts, keyword search, live count, empty state |
 | Case studies | Sheet 02 | Native modal dialog, deep links (`#projects/<slug>`), section index that tracks reading, expandable architecture diagram, decision panels, prev/next |
 | Logic-analyzer experience | Sheet 03 | One channel per role, high while active; A/B cursors mark the selected role; decode panel; arrow keys / Home / End; deep links (`#experience/<role>`) |
@@ -63,7 +67,7 @@ The signal lab is labelled `Interactive demo · Simulated data.` The example sys
 | Projects and case studies | `projects` (filters in `projectFilters`) |
 | Email, GitHub, résumé, LinkedIn | `links` |
 | Architecture explorer example | `archNodes`, `archPaths` |
-| What each board component links to | `boardMap` |
+| What each drone part links to | `boardMap` |
 | Sheet names, numbers and order | `sections` |
 | "Present" on the timeline axis | `timelineNow` (update occasionally) |
 | Wording of the labels themselves | `labels` |
@@ -98,9 +102,9 @@ headline: { text: "Code, signals, and the physical world.", status: "approved" }
 ## Accessibility and performance
 
 - Semantic sections with one `h1` and an `h2` per section; skip link; visible focus rings everywhere.
-- Every board hotspot, diagram node, and filter is a real `<button>`; the board also has a plain legend with the same actions.
+- Every drone balloon, diagram node, and filter is a real `<button>`; the bill of materials offers the same actions as plain buttons.
 - Dialogs use native `<dialog>` (focus is trapped, Escape closes, focus returns to what opened it). Browser Back also closes a case study.
-- Reduced motion: no parallax, trace pulses, or startup sequence; the signal lab starts paused (Run still works); reveals are instant.
+- Reduced motion: no parallax, trace pulses, rotor spin or startup sequence; the signal lab starts paused (Run still works); reveals are instant.
 - Content is never hidden behind animation: reveals fall back to visible after 1.2 s, and a `<noscript>` block lists the supplied experience and LinkedIn.
 - The signal lab loads only when you scroll near it. Animation pauses when its section is off-screen (canvas loops, CSS pulses, board effects).
 - No autoplay audio, no external requests at runtime; fonts are self-hosted.
@@ -115,9 +119,11 @@ src/
   content/types.ts         Content shapes
   App.tsx, main.tsx        Section order, scroll reveals, spotlight, off-screen pausing
   lib.ts                   Dates, hash routing, events
+  theme.ts                 Light/dark switching
   hooks/                   useHash, useMediaQuery, useInView
   components/
-    board/                 Hero circuit board (geometry, SVG layers, interactions)
+    board/                 Hero drone (geometry.ts, BoardLayers.tsx = SVG layers, Board.tsx = interactions)
+    Icons.tsx              Line icons (sheets, contact channels, theme)
     Nav.tsx                Sidebar sheet index + title block, phone strip, drawing frame
     CommandPalette.tsx     Ctrl/⌘ K palette
     CaseStudy.tsx          Case-study dialog

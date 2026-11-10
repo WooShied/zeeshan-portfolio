@@ -1,7 +1,7 @@
 /* ── Lab bench ───────────────────────────────────────────── */
 .bench {
   border: 1px solid var(--line-3);
-  background: rgba(18, 19, 20, 0.92);
+  background: rgba(var(--bg-rgb), 0.92);
 }
 .bench {
   padding: clamp(18px, 3vw, 32px);
@@ -229,12 +229,21 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   gap: 12px;
   min-width: 0;
 }
+/* The scope is a dark instrument screen in both themes. */
 .scope,
 .spec {
+  --fg: #ede7dc;
+  --fg-rgb: 237, 231, 220;
+  --mute: #9a958b;
+  --line: rgba(236, 230, 218, 0.11);
+  --sig: #5fd4cc;
+  --sig-rgb: 95, 212, 204;
+  --amber: #f2b04a;
+  color: var(--fg);
   border: 1px solid var(--line-2);
   background:
     radial-gradient(80% 80% at 50% 40%, rgba(var(--sig-rgb), 0.05), transparent),
-    #0a0d0d;
+    var(--screen);
   box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
   overflow: hidden;
 }
@@ -282,7 +291,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   height: 2px;
 }
 .k--ref {
-  background: rgba(237, 231, 220, 0.5);
+  background: rgba(var(--fg-rgb), 0.5);
 }
 .k--smp {
   width: 6px;
@@ -325,7 +334,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   background:
     linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 28px,
     linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 28px 100%,
-    #0a0d0d;
+    var(--bg-1);
 }
 .arch__canvas {
   position: relative;
@@ -347,7 +356,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 }
 .arch__pulse {
   fill: none;
-  stroke: #c9fffa;
+  stroke: var(--pulse);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-dasharray: 6 44;
@@ -367,7 +376,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   stroke: var(--amber);
 }
 .arch__seg--command .arch__pulse {
-  stroke: #ffe2b0;
+  stroke: var(--pulse-amber);
 }
 .arch__seg.is-lit .arch__pulse {
   opacity: 1;
@@ -468,7 +477,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
   background:
     linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 24px,
     linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 24px 100%,
-    #0a0d0d;
+    var(--bg-1);
 }
 .flow__canvas {
   position: relative;
@@ -542,7 +551,7 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 .flow__sub {
   font-size: clamp(9px, 1.3cqw, 12.5px);
   line-height: 1.25;
-  color: #f6cb85;
+  color: var(--draft-fg);
   max-width: 100%;
 }
 .flow__detail {

@@ -156,6 +156,57 @@
     opacity: 0.25;
   }
 }
+.status {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 14px;
+  border: 1px solid var(--line-2);
+}
+.status li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 10px;
+}
+.status li + li {
+  border-left: 1px solid var(--line);
+}
+.status__k {
+  font-size: 0.6rem;
+  color: var(--mute);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.status__v {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  color: var(--fg);
+}
+.status__led {
+  width: 7px;
+  height: 7px;
+  background: var(--mute);
+}
+.status__led.is-idle {
+  background: var(--sig);
+}
+.status__led.is-armed {
+  background: var(--amber);
+  animation: blink 0.8s steps(1) infinite;
+}
+@media (max-width: 520px) {
+  .status {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .status li:nth-child(3) {
+    border-left: 0;
+  }
+  .status li:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+}
 .board__cap {
   margin-top: 12px;
   padding-top: 8px;
@@ -278,7 +329,7 @@
   position: absolute;
   inset: 3% 3%;
   pointer-events: none;
-  background: radial-gradient(40% 50% at var(--lx) var(--ly), rgba(236, 230, 218, 0.06), transparent 70%);
+  background: radial-gradient(40% 50% at var(--lx) var(--ly), rgba(var(--fg-rgb), 0.06), transparent 70%);
   mix-blend-mode: screen;
 }
 
@@ -287,23 +338,24 @@
   transform: rotateX(54deg) rotateZ(-24deg) scale(0.74) translateY(4%);
 }
 .board[data-inspect] .layer--l1 {
-  transform: translateZ(-80px);
+  transform: translateZ(-90px);
 }
 .board[data-inspect] .layer--l2 {
   transform: translateZ(0);
 }
 .board[data-inspect] .layer--l3 {
-  transform: translateZ(84px);
+  transform: translateZ(120px);
 }
+/* Callouts float above every layer so nothing cuts through them. */
 .board[data-inspect] .layer--hs {
-  transform: translateZ(94px);
+  transform: translateZ(150px);
 }
 
 /* Traces */
 .net__base {
   fill: none;
-  stroke: var(--copper-2);
-  stroke-width: 3;
+  stroke: var(--d-wire);
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
   transition:
@@ -312,8 +364,8 @@
 }
 .net__pulse {
   fill: none;
-  stroke: #c9fffa;
-  stroke-width: 3;
+  stroke: var(--pulse);
+  stroke-width: 2.6;
   stroke-linecap: round;
   stroke-dasharray: 5 95;
   stroke-dashoffset: 100;
@@ -345,14 +397,9 @@
   stroke-dasharray: 8 42;
   animation-duration: 1.1s;
 }
-.board[data-lit="rf"] .antenna {
+.board[data-lit="rf"] .d-antenna,
+.board[data-lit="all"] .d-antenna {
   stroke: var(--sig);
-}
-.aux path {
-  opacity: 0.8;
-}
-.antenna {
-  transition: stroke 0.35s;
 }
 
 /* Components */
@@ -367,11 +414,11 @@
 .comp__body {
   transition: filter 0.35s;
 }
-.layer--l3[data-active="cpu"] .comp[data-comp="cpu"] .comp__ring,
-.layer--l3[data-active="mem"] .comp[data-comp="mem"] .comp__ring,
-.layer--l3[data-active="io"] .comp[data-comp="io"] .comp__ring,
-.layer--l3[data-active="dbg"] .comp[data-comp="dbg"] .comp__ring,
-.layer--l3[data-active="rf"] .comp[data-comp="rf"] .comp__ring {
+.layer--l2[data-active="cpu"] .comp[data-comp="cpu"] .comp__ring,
+.layer--l2[data-active="mem"] .comp[data-comp="mem"] .comp__ring,
+.layer--l2[data-active="io"] .comp[data-comp="io"] .comp__ring,
+.layer--l2[data-active="dbg"] .comp[data-comp="dbg"] .comp__ring,
+.layer--l2[data-active="rf"] .comp[data-comp="rf"] .comp__ring {
   opacity: 0.9;
   animation: ring 1.4s linear infinite;
 }
@@ -380,11 +427,11 @@
     stroke-dashoffset: -18;
   }
 }
-.layer--l3[data-active="cpu"] .comp[data-comp="cpu"] .comp__body,
-.layer--l3[data-active="mem"] .comp[data-comp="mem"] .comp__body,
-.layer--l3[data-active="io"] .comp[data-comp="io"] .comp__body,
-.layer--l3[data-active="dbg"] .comp[data-comp="dbg"] .comp__body,
-.layer--l3[data-active="rf"] .comp[data-comp="rf"] .comp__body {
+.layer--l2[data-active="cpu"] .comp[data-comp="cpu"] .comp__body,
+.layer--l2[data-active="mem"] .comp[data-comp="mem"] .comp__body,
+.layer--l2[data-active="io"] .comp[data-comp="io"] .comp__body,
+.layer--l2[data-active="dbg"] .comp[data-comp="dbg"] .comp__body,
+.layer--l2[data-active="rf"] .comp[data-comp="rf"] .comp__body {
   filter: brightness(1.4);
 }
 .led--amber {
@@ -398,6 +445,7 @@
     opacity: 0.3;
   }
 }
+.board[data-paused] .prop,
 .board[data-paused] .net__pulse,
 .board[data-paused] .led,
 .board[data-paused] .comp__ring,
@@ -411,7 +459,11 @@
   width: 0;
   height: 0;
   transform-style: preserve-3d;
+  transition:
+    left 0.8s var(--ease),
+    top 0.8s var(--ease);
 }
+
 .hs__btn {
   pointer-events: auto;
   position: absolute;
@@ -444,22 +496,12 @@
     color 0.2s,
     border-color 0.2s;
 }
-.hs__num::after {
-  /* leader tick */
-  content: "";
-  position: absolute;
-  left: 100%;
-  top: 50%;
-  width: 8px;
-  height: 1px;
-  background: var(--fg-2);
-}
 .hs__btn:hover .hs__num,
 .hs[data-active] .hs__num,
 .hs__btn[aria-pressed="true"] .hs__num {
   background: var(--sig);
   border-color: var(--sig);
-  color: #062221;
+  color: var(--on-sig);
   transform: scale(1.12);
 }
 .hs__btn:focus-visible {
@@ -487,8 +529,7 @@
   opacity: 1;
   transform: none;
 }
-.hs:nth-child(3) .hs__label,
-.hs:nth-child(5) .hs__label {
+.hs:nth-child(4) .hs__label {
   left: auto;
   right: 30px;
 }
@@ -511,7 +552,8 @@
   left: -60px;
   right: auto;
   top: auto;
-  bottom: 24px;
+  bottom: var(--lift, 24px);
+  padding: 4px 8px;
   transform-origin: 50% 100%;
   transform: rotateZ(24deg) rotateX(-54deg);
   transition-delay: 0.35s;
@@ -522,8 +564,11 @@
   left: 60px;
   top: 100%;
   width: 1px;
-  height: 24px;
+  height: var(--lift, 24px);
   background: var(--sig);
+}
+.board[data-inspect] .hs__to {
+  display: none;
 }
 
 /* Layer key in inspect view */
@@ -616,7 +661,7 @@
   transition: transform 0.25s var(--ease);
 }
 .bom__row:hover {
-  background: rgba(236, 230, 218, 0.04);
+  background: rgba(var(--fg-rgb), 0.04);
 }
 .bom__row[aria-pressed="true"] {
   background: rgba(var(--sig-rgb), 0.07);
@@ -636,7 +681,7 @@
 .bom__row[aria-pressed="true"] .bom__item {
   background: var(--sig);
   border-color: var(--sig);
-  color: #062221;
+  color: var(--on-sig);
 }
 .bom__ref {
   font-size: 0.78rem;
@@ -748,5 +793,213 @@
 @media (prefers-reduced-motion: reduce) {
   .net__pulse {
     display: none;
+  }
+}
+
+/* ── Drone materials (theme tokens) ─────────────────────── */
+.d-arm {
+  fill: var(--d-arm);
+  stroke: var(--d-edge);
+  stroke-width: 1.2;
+}
+.d-plate {
+  fill: var(--d-plate);
+  stroke: var(--d-edge);
+  stroke-width: 1.4;
+}
+.d-hair {
+  stroke: var(--d-edge);
+}
+.d-mount {
+  fill: var(--d-plate-2);
+  stroke: var(--d-edge);
+  stroke-width: 1.2;
+}
+.d-hole {
+  fill: var(--bg);
+  stroke: var(--d-edge);
+  stroke-width: 0.8;
+}
+.d-hole--ring {
+  fill: none;
+  stroke: var(--d-metal);
+  stroke-width: 1.4;
+}
+.d-batt {
+  fill: var(--d-batt);
+  stroke: var(--d-edge);
+}
+.d-strap {
+  fill: var(--d-plate-2);
+  stroke: var(--d-edge);
+  stroke-width: 0.8;
+}
+.d-chip {
+  fill: var(--d-chip);
+  stroke: var(--d-edge);
+  stroke-width: 1;
+}
+.d-ic {
+  fill: var(--d-plate-2);
+  stroke: var(--d-edge);
+  stroke-width: 0.8;
+}
+.d-pin rect {
+  fill: var(--d-metal);
+}
+.d-metal {
+  fill: var(--d-metal);
+  stroke: var(--d-edge);
+  stroke-width: 0.8;
+}
+.d-antenna {
+  fill: none;
+  stroke: var(--d-motor);
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke 0.35s;
+}
+.d-tip {
+  fill: var(--d-chip);
+  stroke: var(--d-edge);
+}
+.d-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  fill: var(--d-label);
+}
+.d-text--sm {
+  font-size: 9px;
+}
+.d-text--chip {
+  fill: rgba(236, 230, 218, 0.62);
+}
+.d-text--lg {
+  font-size: 14px;
+}
+.d-canopy {
+  fill: var(--d-canopy);
+  stroke: var(--d-canopy-edge);
+  stroke-width: 1.4;
+}
+.d-vent {
+  stroke: var(--d-canopy-edge);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.canopy {
+  transition: opacity 0.4s;
+}
+/* Tracing a part: the canopy goes clear so the wiring underneath shows. */
+.board[data-lit] .canopy {
+  opacity: 0.25;
+}
+.board[data-inspect] .canopy {
+  opacity: 0.85;
+}
+.d-disc {
+  fill: var(--d-prop);
+  stroke: var(--d-edge);
+  stroke-width: 0.8;
+  stroke-dasharray: 2 6;
+}
+.d-blade {
+  fill: var(--d-motor);
+  stroke: var(--d-canopy-edge);
+  stroke-width: 1;
+  opacity: 0.95;
+}
+.d-bell {
+  fill: var(--d-motor);
+  stroke: var(--d-edge);
+}
+.d-bell-in {
+  fill: none;
+  stroke: var(--d-edge);
+  stroke-dasharray: 3 3;
+}
+.d-cap {
+  fill: var(--d-metal);
+}
+.d-nav--front {
+  fill: var(--sig);
+}
+.d-nav--rear {
+  fill: var(--amber);
+}
+
+/* Rotors idle-spin; props on diagonals turn in opposite directions. */
+.prop {
+  transform-origin: 0 0;
+  animation: spin 2.2s linear infinite;
+}
+.prop--ccw {
+  animation-direction: reverse;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Faster spin while inspecting, as if the motors were armed. */
+.board[data-inspect] .prop {
+  animation-duration: 0.9s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .prop {
+    animation: none;
+  }
+}
+
+/* Leader lines from balloons to parts */
+.leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.leader line {
+  stroke: var(--fg-2);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  transition: stroke 0.2s;
+}
+.leader circle {
+  fill: var(--bg);
+  stroke: var(--fg-2);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  transition:
+    fill 0.2s,
+    stroke 0.2s;
+}
+.leader[data-active] line {
+  stroke: var(--sig);
+}
+.leader[data-active] circle {
+  fill: var(--sig);
+  stroke: var(--sig);
+}
+.board[data-inspect] .leaders {
+  opacity: 0;
+}
+
+/* Phones: exploded-view callouts show just the part code. */
+@media (max-width: 520px) {
+  .board[data-inspect] .hs__name {
+    display: none;
+  }
+  .board[data-inspect] .hs__label {
+    left: -22px;
+    padding: 2px 6px;
+  }
+  .board[data-inspect] .hs__label::after {
+    left: 22px;
+  }
+  .board[data-inspect] .hs__ref {
+    font-size: 0.7rem;
   }
 }

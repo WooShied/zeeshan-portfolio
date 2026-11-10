@@ -3,15 +3,19 @@ import { boardMap, sections } from "../../content/site";
 import { EV, goToSection } from "../../lib";
 import { useFinePointer, useInView, useReducedMotion } from "../../hooks";
 import { ANCHORS, COMP_NET, VB } from "./geometry";
-import { Copper, Parts, Substrate } from "./BoardLayers";
+import { AvionicsLayer, FrameLayer, ShellLayer } from "./BoardLayers";
 import { ArrowIcon } from "../LinkButton";
+import { useTheme } from "../../theme";
 
 type CompId = (typeof boardMap)[number]["id"];
 
+/** How high each label stands above its part in the exploded view (staggered so they don't collide). */
+const LIFT: Record<string, number> = { cpu: 40, mem: 26, io: 34, dbg: 26, rf: 30 };
+
 const LAYERS = [
-  { key: "L1", name: "Substrate & silkscreen" },
-  { key: "L2", name: "Copper · signal routing" },
-  { key: "L3", name: "Components" },
+  { key: "L1", name: "Frame & battery" },
+  { key: "L2", name: "Avionics & wiring" },
+  { key: "L3", name: "Canopy & rotors" },
 ];
 
 /**
@@ -28,6 +32,7 @@ export function Board() {
   const fine = useFinePointer();
   const reduce = useReducedMotion();
   const onScreen = useInView(rootRef);
+  const theme = useTheme();
 
   const active = preview ?? selected;
   const lit = active ? COMP_NET[active] : null;
@@ -102,7 +107,7 @@ export function Board() {
           <div className="board__toolbar">
             <p className="board__hint mono">
               <span className="led-dot" aria-hidden="true" />
-              {inspect ? "Exploded view · 3 layers" : fine ? "Hover to trace · click to select" : "Tap a numbered balloon"}
+              {inspect ? "Exploded view · canopy lifted" : fine ? "Hover to trace · click to select" : "Tap a numbered balloon"}
             </p>
             <button type="button" className="btn btn--sm" aria-pressed={inspect} onClick={toggleInspect}>
               <svg viewBox="0 0 16 16" aria-hidden="true" className="btn__icon">
@@ -114,31 +119,46 @@ export function Board() {
 
           <div className="stage-wrap">
             <span className="dim dim--h mono" aria-hidden="true">
-              <span>100.00</span>
+              <span>520 · motor to motor</span>
             </span>
             <span className="dim dim--v mono" aria-hidden="true">
-              <span>68.00</span>
+              <span>420</span>
             </span>
             <div className="stage" ref={stageRef}>
               <div className="rig">
                 <div className="layer layer--l1">
-                  <Substrate />
+                  <FrameLayer />
                   <div className="sheen" aria-hidden="true" />
                 </div>
-                <div className="layer layer--l2">
-                  <Copper />
+                <div className="layer layer--l2" data-active={active ?? undefined}>
+                  <AvionicsLayer />
                 </div>
-                <div className="layer layer--l3" data-active={active ?? undefined}>
-                  <Parts />
+                <div className="layer layer--l3">
+                  <ShellLayer />
                 </div>
                 <div className="layer layer--hs">
+                  <svg className="leaders" viewBox={`0 0 ${VB.w} ${VB.h}`} aria-hidden="true">
+                    {boardMap.map((c) => {
+                      const a = ANCHORS[c.id];
+                      return (
+                        <g key={c.id} className="leader" data-active={active === c.id || undefined}>
+                          <line x1={a.x} y1={a.y} x2={a.tx} y2={a.ty} />
+                          <circle cx={a.tx} cy={a.ty} r="4" />
+                        </g>
+                      );
+                    })}
+                  </svg>
                   {boardMap.map((c, i) => {
                     const a = ANCHORS[c.id];
                     return (
                       <div
                         key={c.id}
                         className="hs"
-                        style={{ left: `${(a.x / VB.w) * 100}%`, top: `${(a.y / VB.h) * 100}%` }}
+                        style={{
+                          left: `${(a.x / VB.w) * 100}%`,
+                          top: `${(a.y / VB.h) * 100}%`,
+                          ["--lift" as string]: `${LIFT[c.id] ?? 30}px`,
+                        }}
                         data-active={active === c.id || undefined}
                       >
                         <button
@@ -176,7 +196,28 @@ export function Board() {
               </ol>
             </div>
           </div>
-          <figcaption className="board__cap mono">Fig. 1 · Main board, top view · Not to scale</figcaption>
+          <ul className="status mono" aria-label="Viewer status">
+            <li>
+              <span className="status__k">View</span>
+              <span className="status__v">{inspect ? "Exploded" : "Top"}</span>
+            </li>
+            <li>
+              <span className="status__k">Selected</span>
+              <span className="status__v">{current ? current.ref : "None"}</span>
+            </li>
+            <li>
+              <span className="status__k">Rotors</span>
+              <span className="status__v">
+                <span className={`status__led${reduce ? "" : inspect ? " is-armed" : " is-idle"}`} aria-hidden="true" />
+                {reduce ? "Still" : inspect ? "Spun up" : "Idle"}
+              </span>
+            </li>
+            <li>
+              <span className="status__k">Theme</span>
+              <span className="status__v">{theme === "light" ? "Paper" : "Graphite"}</span>
+            </li>
+          </ul>
+          <figcaption className="board__cap mono">Fig. 1 · Quadrotor, top view · Not to scale</figcaption>
         </figure>
 
         <div className="board__panel">
@@ -225,7 +266,7 @@ export function Board() {
                 </button>
               </div>
             ) : (
-              <p className="readout__idle">Each part of the board leads to a sheet of this portfolio. Select one on the board or in the table.</p>
+              <p className="readout__idle">Each part of the drone leads to a sheet of this portfolio. Select one on the drone or in the table.</p>
             )}
           </div>
         </div>

@@ -9,8 +9,22 @@
       content="Portfolio of Zeeshan Malik: robotics, embedded systems and software engineering. Review draft with placeholder content awaiting approval."
     />
     <meta name="robots" content="noindex" />
-    <meta name="theme-color" content="#0d0f10" />
+    <meta name="theme-color" content="#121314" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <script>
+      // Set the theme before first paint: saved choice, else the system setting.
+      (function () {
+        var t;
+        try {
+          t = localStorage.getItem("zm-theme");
+        } catch (e) {}
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+        if (t === "light") document.querySelector('meta[name="theme-color"]').setAttribute("content", "#f1ede4");
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

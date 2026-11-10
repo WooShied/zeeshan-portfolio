@@ -2,6 +2,7 @@ import { identity, links } from "../content/site";
 import { SectionHeader } from "../components/SectionHeader";
 import { ArrowIcon } from "../components/LinkButton";
 import { StatusTag } from "../components/StatusTag";
+import { LINK_ICON } from "../components/Icons";
 
 /** Contact as a connector pinout: connected pins work, NC pins are not supplied yet. */
 export function Contact() {
@@ -19,6 +20,7 @@ export function Contact() {
             <div className="contact__ctas">
               {live.map((l) => (
                 <a key={l.id} className="btn btn--primary btn--lg" href={l.href!} target="_blank" rel="noopener noreferrer">
+                  <span className="btn__lead">{LINK_ICON[l.id]?.()}</span>
                   Message on {l.label}
                   <ArrowIcon className="btn__icon btn__icon--r" />
                   <span className="sr-only">(opens in a new tab)</span>
@@ -43,14 +45,17 @@ export function Contact() {
                   <tr key={l.id} data-live={l.href ? "" : undefined}>
                     <td className="mono">{i + 1}</td>
                     <td>
-                      {l.href ? (
-                        <a href={l.href} target="_blank" rel="noopener noreferrer">
-                          {l.label}
-                          <span className="sr-only"> (opens in a new tab)</span>
-                        </a>
-                      ) : (
-                        l.label
-                      )}
+                      <span className="pin__chan">
+                        <span className="pin__ico">{LINK_ICON[l.id]?.()}</span>
+                        {l.href ? (
+                          <a href={l.href} target="_blank" rel="noopener noreferrer">
+                            {l.label}
+                            <span className="sr-only"> (opens in a new tab)</span>
+                          </a>
+                        ) : (
+                          l.label
+                        )}
+                      </span>
                     </td>
                     <td className="mono">
                       {l.href ? (

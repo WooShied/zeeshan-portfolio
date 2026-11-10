@@ -1,100 +1,90 @@
 /**
- * Board geometry for the hero (viewBox 1000 × 680).
- * Traces are generated as 45° PCB-style buses so parallel lines keep
- * even spacing through their bends.
+ * Drone geometry for the hero (viewBox 1000 × 680, top view, nose up).
+ * The airframe is an X quad; avionics sit in the body under a canopy.
  */
 export const VB = { w: 1000, h: 680 };
+export const C = { x: 500, y: 340 };
 
-export type NetId = "mem" | "io" | "dbg" | "rf";
+export type NetId = "mem" | "io" | "dbg" | "rf" | "esc";
 
-const SHIFT = 16 * 0.414; // keeps 45° bends parallel at 16 px pitch
+/** Motor centres: front-left, front-right, rear-left, rear-right. */
+export const MOTORS = [
+  { x: 240, y: 130, dir: "ccw" },
+  { x: 760, y: 130, dir: "cw" },
+  { x: 240, y: 550, dir: "cw" },
+  { x: 760, y: 550, dir: "ccw" },
+] as const;
 
-/** Horizontal-first bus: run along x, 45° jog, finish along x. */
-function busH(x1: number, ys1: number[], x2: number, ys2: number[], xm0: number, shift: number) {
-  return ys1.map((y1, i) => {
-    const y2 = ys2[i];
-    const dy = Math.abs(y2 - y1);
-    const sx = Math.sign(x2 - x1);
-    const xm = xm0 + i * shift;
-    return `M${x1} ${y1}H${xm.toFixed(1)}L${(xm + sx * dy).toFixed(1)} ${y2}H${x2}`;
-  });
+export const PROP_R = 104;
+
+/** Point a fraction t of the way from the body centre to a motor. */
+export function along(m: { x: number; y: number }, t: number) {
+  return { x: C.x + (m.x - C.x) * t, y: C.y + (m.y - C.y) * t };
 }
 
-/** Vertical-first bus: run along y, 45° jog, finish along y. */
-function busV(xs1: number[], y1: number, xs2: number[], y2: number, ym0: number, shift: number) {
-  return xs1.map((x1, i) => {
-    const x2 = xs2[i];
-    const dx = Math.abs(x2 - x1);
-    const sy = Math.sign(y2 - y1);
-    const ym = ym0 + i * shift;
-    return `M${x1} ${y1}V${ym.toFixed(1)}L${x2} ${(ym + sy * dx).toFixed(1)}V${y2}`;
-  });
+/** Unit vector and perpendicular for an arm. */
+export function armAxes(m: { x: number; y: number }) {
+  const dx = m.x - C.x;
+  const dy = m.y - C.y;
+  const len = Math.hypot(dx, dy);
+  const ux = dx / len;
+  const uy = dy / len;
+  return { ux, uy, px: -uy, py: ux, len };
 }
 
-const range = (n: number, start: number, step: number) => Array.from({ length: n }, (_, i) => start + i * step);
-const C = 10; // chamfer size
+/** Rectangle polygon along an arm from t0 to t1, half-width w. */
+export function armPoly(m: { x: number; y: number }, t0: number, t1: number, w: number) {
+  const a = along(m, t0);
+  const b = along(m, t1);
+  const { px, py } = armAxes(m);
+  const pts = [
+    [a.x + px * w, a.y + py * w],
+    [b.x + px * w, b.y + py * w],
+    [b.x - px * w, b.y - py * w],
+    [a.x - px * w, a.y - py * w],
+  ];
+  return pts.map((p) => p.map((v) => v.toFixed(1)).join(",")).join(" ");
+}
 
-/** CPU body: 170 × 170, 18 pins per side at 8 px pitch. */
-export const CPU = { x: 415, y: 245, s: 170 };
-export const CPU_PINS = range(18, 17, 8);
+const r = (n: number, start: number, step: number) => Array.from({ length: n }, (_, i) => start + i * step);
 
+/** ESC boards sit 52% of the way out each arm. */
+export const ESC_T = 0.52;
+
+/** Wiring, drawn on the avionics layer. Each net starts at the flight controller. */
 export const NETS: Record<NetId, string[]> = {
-  // CPU left → memory right pins
-  mem: busH(405, range(5, 262, 16), 300, range(5, 214, 16), 380, -SHIFT),
-  // CPU right → edge fingers, plus CPU bottom → USB-C
-  io: [
-    ...busH(595, range(4, 342, 16), 925, range(4, 470, 16), 700, -SHIFT),
-    ...busV(range(4, 520, 16), 425, range(4, 666, 16), 604, 444, -SHIFT),
-  ],
-  // CPU bottom-left → debug header (down, left, down)
-  dbg: range(4, 432, 16).map((x0, i) => {
-    const yh = 466 + i * 16;
-    const xt = 150 + i * 16;
-    return `M${x0} 425V${yh - C}L${x0 - C} ${yh}H${xt + C}L${xt} ${yh + C}V552`;
-  }),
-  // CPU top → RF module pads (up, right)
-  rf: range(5, 504, 16).map((x0, i) => {
-    const yh = 100 + i * 16;
-    return `M${x0} 235V${yh + C}L${x0 + C} ${yh}H690`;
+  // FC → camera (front)
+  io: r(3, 488, 12).map((x) => `M${x} 296V238`),
+  // FC → blackbox logger (right)
+  mem: r(3, 318, 12).map((y) => `M546 ${y}H584`),
+  // FC → debug USB port (left)
+  dbg: r(3, 330, 10).map((y) => `M454 ${y}H398`),
+  // FC → telemetry radio (rear) and its antenna leads
+  rf: [...r(3, 488, 12).map((x) => `M${x} 384V430`), "M478 462L428 528", "M522 462L572 528"],
+  // FC corners → ESCs → motors (three phases each)
+  esc: MOTORS.flatMap((m) => {
+    const corner = { x: C.x + Math.sign(m.x - C.x) * 44, y: C.y + Math.sign(m.y - C.y) * 44 };
+    const e = along(m, ESC_T);
+    const { ux, uy, px, py, len } = armAxes(m);
+    const end = { x: m.x - ux * 34, y: m.y - uy * 34 };
+    void len;
+    const feed = `M${corner.x} ${corner.y}L${(e.x - ux * 22).toFixed(1)} ${(e.y - uy * 22).toFixed(1)}`;
+    const phases = [-6, 0, 6].map((o) => {
+      const s = { x: e.x + ux * 22 + px * o, y: e.y + uy * 22 + py * o };
+      const t = { x: end.x + px * o, y: end.y + py * o };
+      return `M${s.x.toFixed(1)} ${s.y.toFixed(1)}L${t.x.toFixed(1)} ${t.y.toFixed(1)}`;
+    });
+    return [feed, ...phases];
   }),
 };
 
-/** Dim decorative routing that never lights up. */
-export const AUX = [
-  "M405 358H360L330 388V470",
-  "M405 374H368L344 398V430H300",
-  "M405 390H376L360 406",
-  "M595 262H640L668 234V200",
-  "M595 278H648L680 246H760",
-  "M595 294H656L690 260V230",
-  "M440 235V200L420 180H330",
-  "M456 235V210L440 194H360",
-  "M472 235V220",
-  "M300 310H330L350 330",
-  "M300 326H322L340 344V360",
-  "M760 470V440L790 410H860",
-  "M90 300H150L170 280V200",
-  "M90 320H160L190 350",
-  "M820 600V560L840 540",
-  "M260 600H330L360 570H420",
-  "M620 560H600L590 570V610",
-  "M880 330V380L860 400",
-];
-
-export const VIAS: [number, number][] = [
-  [330, 470], [300, 430], [360, 406], [668, 200], [760, 246], [690, 230], [330, 180], [360, 194],
-  [472, 220], [350, 330], [340, 360], [860, 410], [170, 200], [190, 350], [840, 540], [420, 570],
-  [590, 610], [860, 400], [120, 440], [640, 470], [560, 470], [250, 410], [880, 250], [600, 200],
-  [120, 140], [540, 600], [780, 560], [300, 560], [380, 120], [620, 120],
-];
-
-/** Hotspot anchor points (viewBox coords). */
-export const ANCHORS: Record<string, { x: number; y: number }> = {
-  cpu: { x: 556, y: 274 },
-  mem: { x: 245, y: 182 },
-  io: { x: 945, y: 504 },
-  dbg: { x: 182, y: 569 },
-  rf: { x: 866, y: 94 },
+/** Balloon positions (in open space) and the point each leader line touches. */
+export const ANCHORS: Record<string, { x: number; y: number; tx: number; ty: number }> = {
+  cpu: { x: 700, y: 262, tx: 546, ty: 304 },
+  mem: { x: 700, y: 410, tx: 630, ty: 348 },
+  io: { x: 500, y: 128, tx: 500, ty: 186 },
+  dbg: { x: 296, y: 340, tx: 374, ty: 340 },
+  rf: { x: 500, y: 592, tx: 500, ty: 466 },
 };
 
 /** Which net lights up for each component. */

@@ -189,7 +189,7 @@
 .la {
   --la-label: 320px;
   border: 1px solid var(--line-3);
-  background: rgba(18, 19, 20, 0.9);
+  background: rgba(var(--bg-rgb), 0.9);
 }
 .la__bar {
   display: flex;
@@ -251,7 +251,7 @@
   transition: background-color 0.15s;
 }
 .la__row:hover {
-  background: rgba(236, 230, 218, 0.03);
+  background: rgba(var(--fg-rgb), 0.03);
 }
 .la__row[aria-selected="true"] {
   background: rgba(var(--sig-rgb), 0.06);
@@ -333,7 +333,7 @@
   font-style: normal;
   font-size: 0.66rem;
   text-align: center;
-  color: #121314;
+  color: var(--on-fg);
   background: var(--amber);
 }
 .la__panel {
@@ -510,7 +510,7 @@
   border-top: 1px solid var(--line);
 }
 .part:hover {
-  background: rgba(236, 230, 218, 0.03);
+  background: rgba(var(--fg-rgb), 0.03);
 }
 .part__bin {
   display: grid;
@@ -548,7 +548,7 @@
 /* ── About: datasheet ───────────────────────────────────── */
 .ds {
   border: 1px solid var(--line-3);
-  background: rgba(18, 19, 20, 0.9);
+  background: rgba(var(--bg-rgb), 0.9);
 }
 .ds__head {
   display: flex;
@@ -703,6 +703,23 @@
 }
 .pinout__table a:hover {
   color: var(--sig);
+}
+.pin__chan {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.pin__ico {
+  display: grid;
+  place-items: center;
+  color: var(--mute);
+}
+tr[data-live] .pin__ico {
+  color: var(--sig);
+}
+.btn__lead {
+  display: grid;
+  place-items: center;
 }
 .pin {
   font-size: 0.72rem;

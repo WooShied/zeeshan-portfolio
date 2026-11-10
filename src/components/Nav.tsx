@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { identity, sections } from "../content/site";
 import { emit, EV } from "../lib";
+import { toggleTheme, useTheme } from "../theme";
+import { IconMoon, IconSearch, IconSun, SECTION_ICON } from "./Icons";
 
 /** Which section is in the middle of the viewport. */
 export function useActiveSection() {
@@ -47,12 +49,31 @@ const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigat
 export const MOD_KEY = isMac ? "⌘" : "Ctrl";
 const TOTAL = String(sections.length).padStart(2, "0");
 
-const SearchIcon = () => (
-  <svg viewBox="0 0 16 16" aria-hidden="true">
-    <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
-    <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.4" />
-  </svg>
-);
+const SearchIcon = IconSearch;
+
+/** Build date, shown as the drawing's revision date. */
+const REVISED = new Date(__BUILD_DATE__).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+
+/** Light/dark switch. The icon shows the theme you'll switch to. */
+export function ThemeToggle({ className = "" }: { className?: string }) {
+  const theme = useTheme();
+  const next = theme === "light" ? "dark" : "light";
+  return (
+    <button
+      type="button"
+      className={`theme-btn ${className}`}
+      onClick={toggleTheme}
+      aria-label={`Switch to ${next} mode`}
+      title={`Switch to ${next} mode`}
+      data-theme-now={theme}
+    >
+      <span className="theme-btn__icons" aria-hidden="true">
+        <IconSun />
+        <IconMoon />
+      </span>
+    </button>
+  );
+}
 
 /**
  * Drawing-sheet chrome. Desktop: a left sidebar with the sheet index
@@ -105,6 +126,7 @@ export function Nav() {
                   <span className="index__node" aria-hidden="true" />
                   <span className="index__num mono">{s.sheet}</span>
                   <span className="index__label">{s.short}</span>
+                  <span className="index__icon">{SECTION_ICON[s.id]?.()}</span>
                 </a>
               </li>
             ))}
@@ -112,11 +134,14 @@ export function Nav() {
           <span className="index__bus" aria-hidden="true" />
         </nav>
 
-        <button type="button" className="side__search" onClick={() => emit(EV.palette)}>
-          <SearchIcon />
-          <span>Search</span>
-          <kbd className="mono">{MOD_KEY} K</kbd>
-        </button>
+        <div className="side__tools">
+          <button type="button" className="side__search" onClick={() => emit(EV.palette)}>
+            <SearchIcon />
+            <span>Search</span>
+            <kbd className="mono">{MOD_KEY} K</kbd>
+          </button>
+          <ThemeToggle />
+        </div>
 
         <dl className="tblock mono" aria-label="Current sheet">
           <div className="tblock__wide">
@@ -134,6 +159,12 @@ export function Nav() {
           <div>
             <dt>Rev</dt>
             <dd className="tblock__rev">A · Draft</dd>
+          </div>
+          <div className="tblock__wide">
+            <dt>Revised</dt>
+            <dd>
+              <time dateTime={__BUILD_DATE__.slice(0, 10)}>{REVISED}</time>
+            </dd>
           </div>
         </dl>
       </aside>
@@ -153,6 +184,7 @@ export function Nav() {
             {sec.short}
           </span>
         </p>
+        <ThemeToggle className="mbar__btn" />
         <button type="button" className="mbar__btn" onClick={() => emit(EV.palette)} aria-label="Search the site">
           <SearchIcon />
         </button>
@@ -174,6 +206,7 @@ export function Nav() {
               <li key={s.id}>
                 <a href={`#${s.id}`} aria-current={current === s.id ? "true" : undefined} onClick={() => setOpen(false)}>
                   <span className="mono msheet__num">{s.sheet}</span>
+                  <span className="msheet__icon">{SECTION_ICON[s.id]?.()}</span>
                   {s.label}
                 </a>
               </li>

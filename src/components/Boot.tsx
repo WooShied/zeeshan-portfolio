@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const LINES = ["POWER RAILS ........ OK", "CLOCK 48 MHZ ....... LOCKED", "BUS SCAN ........... 5 DEVICES", "BOOT ............... PORTFOLIO"];
+const LINES = ["PREFLIGHT .......... OK", "IMU CALIBRATION .... OK", "ESC HANDSHAKE ...... 4/4", "LINK ............... PORTFOLIO"];
 
 /**
  * A short power-on sequence (about 1.5 s). The page is already rendered

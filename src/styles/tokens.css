@@ -1,32 +1,55 @@
 /* ── Design tokens · "engineering drawing" ─────────────────────
-   A drafted sheet in graphite: hairline rules, square corners,
-   crop marks, IBM Plex throughout. Cyan is linework and live
-   signal; amber is status and draft labels only. No glows.     */
+   A drafted sheet: hairline rules, square corners, crop marks,
+   IBM Plex throughout. Cyan is linework and live signal; amber is
+   status and draft labels only. Two themes: graphite (dark) and
+   drafting paper (light), switched by html[data-theme].          */
 
 :root {
+  /* dark: graphite sheet */
   --bg: #121314;
+  --bg-rgb: 18, 19, 20;
   --bg-1: #17191a;
   --bg-2: #1d2021;
   --bg-3: #25292a;
   --fg: #ece6da;
+  --fg-rgb: 236, 230, 218;
   --fg-2: #c7c1b5;
+  --fg-hi: #fffaf0;
   --mute: #9a958b;
   --line: rgba(236, 230, 218, 0.11);
   --line-2: rgba(236, 230, 218, 0.2);
   --line-3: rgba(236, 230, 218, 0.34);
+  --on-fg: #121314;
 
   --sig: #5fd4cc;
   --sig-rgb: 95, 212, 204;
   --sig-dim: #3a8f8a;
+  --on-sig: #062221;
   --amber: #f2b04a;
   --amber-rgb: 242, 176, 74;
+  --draft-fg: #f6cb85;
   --red: #ff7a66;
+  --pulse: #c9fffa;
+  --pulse-amber: #ffe2b0;
+  --backdrop: rgba(6, 8, 9, 0.72);
+  --screen: #0a0d0d;
 
-  /* PCB palette for the hero board */
-  --copper: #2b3a3a;
-  --copper-2: #3a4c4b;
-  --pad: #9c8656;
-  --silk: rgba(236, 230, 218, 0.5);
+  /* drone illustration */
+  --d-plate: #1f2526;
+  --d-plate-2: #161b1c;
+  --d-arm: #252b2c;
+  --d-edge: rgba(236, 230, 218, 0.16);
+  --d-motor: #3a4142;
+  --d-metal: #6a7273;
+  --d-wire: #3d504f;
+  --d-chip: #0f1213;
+  --d-batt: #2b3031;
+  --d-canopy: rgba(28, 36, 38, 0.62);
+  --d-canopy-edge: rgba(236, 230, 218, 0.28);
+  --d-glass: rgba(95, 212, 204, 0.08);
+  --d-prop: rgba(236, 230, 218, 0.1);
+  --d-label: rgba(236, 230, 218, 0.55);
+  --d-shadow: rgba(0, 0, 0, 0.55);
 
   --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
   --sans: "IBM Plex Sans Variable", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -49,6 +72,54 @@
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
 
   color-scheme: dark;
+}
+
+/* light: drafting paper */
+:root[data-theme="light"] {
+  --bg: #f1ede4;
+  --bg-rgb: 241, 237, 228;
+  --bg-1: #ebe6da;
+  --bg-2: #e3ddcf;
+  --bg-3: #d7d0c0;
+  --fg: #1a1b1c;
+  --fg-rgb: 26, 27, 28;
+  --fg-2: #3c3e3f;
+  --fg-hi: #000;
+  --mute: #66635c;
+  --line: rgba(26, 27, 28, 0.12);
+  --line-2: rgba(26, 27, 28, 0.22);
+  --line-3: rgba(26, 27, 28, 0.4);
+  --on-fg: #f1ede4;
+
+  --sig: #0b7a73;
+  --sig-rgb: 11, 122, 115;
+  --sig-dim: #79bdb7;
+  --on-sig: #f1ede4;
+  --amber: #a15f00;
+  --amber-rgb: 161, 95, 0;
+  --draft-fg: #8a4f00;
+  --red: #c0392b;
+  --pulse: #0b7a73;
+  --pulse-amber: #a15f00;
+  --backdrop: rgba(40, 36, 30, 0.42);
+
+  --d-plate: #d6cfc0;
+  --d-plate-2: #cbc3b2;
+  --d-arm: #c2baa8;
+  --d-edge: rgba(26, 27, 28, 0.35);
+  --d-motor: #8f8a80;
+  --d-metal: #a3a29d;
+  --d-wire: #b3a68a;
+  --d-chip: #2b2e30;
+  --d-batt: #4a4f51;
+  --d-canopy: rgba(250, 248, 242, 0.55);
+  --d-canopy-edge: rgba(26, 27, 28, 0.4);
+  --d-glass: rgba(11, 122, 115, 0.08);
+  --d-prop: rgba(26, 27, 28, 0.08);
+  --d-label: rgba(26, 27, 28, 0.6);
+  --d-shadow: rgba(60, 50, 30, 0.25);
+
+  color-scheme: light;
 }
 
 @media (min-width: 1100px) {

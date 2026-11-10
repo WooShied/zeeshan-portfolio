@@ -364,13 +364,13 @@ export const archPaths: ArchPath[] = [
   },
 ];
 
-/* ── Hero board: which component maps to which section ─────── */
+/* ── Hero drone: which component maps to which section ─────── */
 export const boardMap = [
-  { id: "cpu", ref: "U1", name: "Processor", section: "about", sectionLabel: "About", blurb: "Who Zeeshan is and what he’s interested in." },
-  { id: "mem", ref: "U2", name: "Memory", section: "experience", sectionLabel: "Experience", blurb: "Five roles, stored in order, read on demand." },
-  { id: "io", ref: "J1", name: "I/O connectors", section: "projects", sectionLabel: "Projects", blurb: "Case studies: what goes in, what comes out." },
-  { id: "dbg", ref: "J2", name: "Debug interface", section: "lab", sectionLabel: "Signal lab", blurb: "Probe a live signal and watch it alias." },
-  { id: "rf", ref: "M1", name: "Communications module", section: "contact", sectionLabel: "Contact", blurb: "Open a channel. LinkedIn is live." },
+  { id: "cpu", ref: "FC1", name: "Flight controller", section: "about", sectionLabel: "About", blurb: "The brain of the airframe: who Zeeshan is and what he’s interested in." },
+  { id: "mem", ref: "LOG", name: "Blackbox logger", section: "experience", sectionLabel: "Experience", blurb: "Every flight gets logged. Five roles, recorded in order." },
+  { id: "io", ref: "CAM", name: "Camera payload", section: "projects", sectionLabel: "Projects", blurb: "What the system is built to capture: the case studies." },
+  { id: "dbg", ref: "USB", name: "Debug port", section: "lab", sectionLabel: "Signal lab", blurb: "Plug in a probe and watch a signal alias." },
+  { id: "rf", ref: "RX", name: "Telemetry radio", section: "contact", sectionLabel: "Contact", blurb: "Open a link. LinkedIn is live." },
 ] as const;
 
 /* ── Section list (sheet index, command palette) ─────────── */

@@ -17,7 +17,7 @@ body {
   margin: 0;
   background-color: var(--bg);
   /* drafting paper: a faint dot grid */
-  background-image: radial-gradient(circle, rgba(236, 230, 218, 0.075) 1px, transparent 1.4px);
+  background-image: radial-gradient(circle, rgba(var(--fg-rgb), 0.075) 1px, transparent 1.4px);
   background-size: 24px 24px;
   background-attachment: fixed;
   color: var(--fg);

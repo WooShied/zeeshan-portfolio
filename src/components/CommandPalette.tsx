@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { experience, links, projects, sections } from "../content/site";
 import { emit, EV, goToSection, setHash } from "../lib";
+import { getTheme, toggleTheme } from "../theme";
+import { SECTION_ICON } from "./Icons";
 
 interface Cmd {
   id: string;
+  icon?: string;
   group: string;
   label: string;
   hint?: string;
@@ -17,6 +20,7 @@ function buildCommands(): Cmd[] {
   sections.forEach((s) =>
     cmds.push({
       id: `sec-${s.id}`,
+      icon: s.id,
       group: "Sections",
       label: s.id === "top" ? "Back to the board (top)" : s.label,
       hint: `Sheet ${s.sheet}`,
@@ -63,6 +67,13 @@ function buildCommands(): Cmd[] {
       setHash("#top", "replace");
       emit(EV.inspect);
     },
+  });
+  cmds.push({
+    id: "act-theme",
+    group: "Actions",
+    label: "Toggle light / dark mode",
+    keywords: "theme light dark colour color mode appearance",
+    run: () => toggleTheme(),
   });
   cmds.push({
     id: "act-copy",
@@ -277,8 +288,9 @@ export function CommandPalette() {
                     onClick={() => run(c)}
                   >
                     <span className="pal__lbl">
+                      {c.icon ? <span className="pal__ico">{SECTION_ICON[c.icon]?.()}</span> : null}
                       {q ? <span className="pal__grp mono">{c.group}</span> : null}
-                      {c.label}
+                      {c.id === "act-theme" ? `Switch to ${getTheme() === "light" ? "dark" : "light"} mode` : c.label}
                     </span>
                     {c.hint ? <span className="pal__hint mono">{c.hint}</span> : null}
                   </li>,
