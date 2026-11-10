@@ -1,0 +1,3 @@
+# Review draft: keep out of search until Zeeshan approves the content.
+User-agent: *
+Disallow: /

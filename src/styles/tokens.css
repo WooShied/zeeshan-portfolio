@@ -1,0 +1,54 @@
+/* ── Design tokens ────────────────────────────────────────────
+   Graphite surfaces, warm off-white type, one restrained cyan
+   for "live signal", amber only for status and draft labels.  */
+
+:root {
+  --bg: #0d0f10;
+  --bg-1: #121516;
+  --bg-2: #171b1c;
+  --bg-3: #1e2324;
+  --bg-4: #272d2e;
+  --fg: #ede7dc;
+  --fg-2: #c9c3b7;
+  --mute: #9c978d;
+  --line: rgba(237, 231, 220, 0.08);
+  --line-2: rgba(237, 231, 220, 0.15);
+  --line-3: rgba(237, 231, 220, 0.24);
+
+  --sig: #5fd4cc;
+  --sig-rgb: 95, 212, 204;
+  --sig-dim: #3a8f8a;
+  --amber: #f2b04a;
+  --amber-rgb: 242, 176, 74;
+  --red: #ff7a66;
+
+  /* PCB palette for the hero board */
+  --pcb: #111819;
+  --pcb-2: #0e1415;
+  --copper: #2b3a3a;
+  --copper-2: #3a4c4b;
+  --pad: #9c8656;
+  --silk: rgba(237, 231, 220, 0.5);
+
+  --sans: "Hanken Grotesk Variable", "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --step--2: clamp(0.72rem, 0.7rem + 0.08vw, 0.76rem);
+  --step--1: clamp(0.82rem, 0.8rem + 0.1vw, 0.88rem);
+  --step-0: clamp(1rem, 0.97rem + 0.18vw, 1.09rem);
+  --step-1: clamp(1.15rem, 1.07rem + 0.4vw, 1.38rem);
+  --step-2: clamp(1.45rem, 1.25rem + 0.9vw, 2.05rem);
+  --step-3: clamp(2rem, 1.5rem + 2.2vw, 3.3rem);
+  --step-4: clamp(2.6rem, 1.6rem + 4.4vw, 5.6rem);
+
+  --gutter: clamp(16px, 4vw, 48px);
+  --maxw: 1320px;
+  --radius: 18px;
+  --radius-sm: 10px;
+  --bar-h: 64px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+
+  color-scheme: dark;
+}
