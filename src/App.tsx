@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Nav, Rail } from "./components/Nav";
+import { Nav, Frame } from "./components/Nav";
 import { Boot } from "./components/Boot";
 import { CommandPalette } from "./components/CommandPalette";
 import { Footer } from "./components/Footer";
@@ -49,21 +49,6 @@ function useReveal() {
   }, []);
 }
 
-/** Cursor spotlight on cards: pointer position goes into CSS variables. */
-function useSpotlight() {
-  useEffect(() => {
-    const onMove = (e: PointerEvent) => {
-      const card = (e.target as HTMLElement | null)?.closest?.(".card") as HTMLElement | null;
-      if (!card) return;
-      const r = card.getBoundingClientRect();
-      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
-      card.style.setProperty("--my", `${e.clientY - r.top}px`);
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
-  }, []);
-}
-
 /** Pause CSS animation inside sections that are off-screen. */
 function useOffscreenPause() {
   useEffect(() => {
@@ -78,7 +63,6 @@ function useOffscreenPause() {
 
 export default function App() {
   useReveal();
-  useSpotlight();
   useOffscreenPause();
   return (
     <>
@@ -86,8 +70,9 @@ export default function App() {
         Skip to content
       </a>
       <Boot />
+      <Frame />
       <Nav />
-      <Rail />
+      <div className="page">
       <main id="main" tabIndex={-1}>
         <Hero />
         <Projects />
@@ -98,6 +83,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      </div>
       <CommandPalette />
     </>
   );

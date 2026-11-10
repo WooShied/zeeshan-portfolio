@@ -35,7 +35,7 @@ function readVar(el: Element, name: string) {
  * the analog signal, noisy samples, the reconstruction, and a DFT of the
  * samples. Simulated data only.
  */
-export function SignalLab() {
+export default function SignalLab() {
   const [p, setP] = useState(DEFAULTS);
   const reduce = useReducedMotion();
   const [running, setRunning] = useState(!reduce);

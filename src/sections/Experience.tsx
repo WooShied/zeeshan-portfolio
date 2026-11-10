@@ -4,117 +4,69 @@ import type { Role } from "../content/types";
 import { SectionHeader } from "../components/SectionHeader";
 import { StatusTag } from "../components/StatusTag";
 import { Slots } from "../components/Slots";
-import { useHash, useMediaQuery } from "../hooks";
+import { useHash } from "../hooks";
 import { dateTimeAttr, formatMonth, formatRange, monthIndex, scrollToId, setHash } from "../lib";
 
-const addr = (i: number) => `0x${((i + 1) * 0x1000).toString(16).toUpperCase().padStart(4, "0")}`;
+const MIN = Math.min(...experience.map((r) => monthIndex(r.start))) - 2; // lead-in so every rising edge shows
+const MAX = monthIndex(timelineNow) + 1;
+const SPAN = MAX - MIN;
+const pos = (m: number) => (m - MIN) / SPAN;
 
-function RoleFacts({ role }: { role: Role }) {
+function RoleDetail({ role, ch }: { role: Role; ch: number }) {
   return (
-    <dl className="role__facts">
-      <div>
-        <dt className="mono">Dates</dt>
-        <dd>
-          <time dateTime={dateTimeAttr(role.start)}>{formatMonth(role.start)}</time> –{" "}
-          <time dateTime={dateTimeAttr(role.end)}>{formatMonth(role.end)}</time>
-        </dd>
-      </div>
-      <div>
-        <dt className="mono">Type</dt>
-        <dd>{role.employmentType}</dd>
-      </div>
-      <div>
-        <dt className="mono">Location</dt>
-        <dd>
-          {role.location ?? <span className="muted">Location not supplied</span>}
-          {role.workplace ? <span className="role__wp"> · {role.workplace}</span> : null}
-        </dd>
-      </div>
-    </dl>
-  );
-}
-
-function RoleDetail({ role, i, inline = false }: { role: Role; i: number; inline?: boolean }) {
-  return (
-    <div className="role">
-      <p className="role__read mono" aria-hidden="true">
-        <span className="led-dot led-dot--on" />
-        READ {addr(i)} · 4 fields
+    <div className="decode" key={role.id}>
+      <p className="decode__k mono">
+        Decode · D{ch} · {formatRange(role.start, role.end)}
       </p>
-      {inline ? null : (
-        <>
-          <h3 className="role__company">{role.company}</h3>
-          <p className="role__title">{role.title}</p>
-        </>
-      )}
-      <StatusTag kind="supplied" />
-      <RoleFacts role={role} />
-      <div className="role__desc">
-        <p className="role__desc-k mono">Description · draft template</p>
-        <p>
-          <Slots text={role.description.text} />
-        </p>
-        <StatusTag status={role.description.status} />
+      <div className="decode__grid">
+        <div>
+          <h3 className="decode__company">{role.company}</h3>
+          <p className="decode__title">{role.title}</p>
+          <StatusTag kind="supplied" />
+        </div>
+        <dl className="decode__facts">
+          <div>
+            <dt className="mono">Dates</dt>
+            <dd>
+              <time dateTime={dateTimeAttr(role.start)}>{formatMonth(role.start)}</time> –{" "}
+              <time dateTime={dateTimeAttr(role.end)}>{formatMonth(role.end)}</time>
+            </dd>
+          </div>
+          <div>
+            <dt className="mono">Type</dt>
+            <dd>{role.employmentType}</dd>
+          </div>
+          <div>
+            <dt className="mono">Location</dt>
+            <dd>
+              {role.location ?? <span className="muted">Location not supplied</span>}
+              {role.workplace ? <span className="muted"> · {role.workplace}</span> : null}
+            </dd>
+          </div>
+        </dl>
+        <div className="decode__desc">
+          <p className="decode__dk mono">Description · draft template</p>
+          <p>
+            <Slots text={role.description.text} />
+          </p>
+          <StatusTag status={role.description.status} />
+        </div>
       </div>
     </div>
   );
 }
 
-/** Timeline axis: every role as a bar between its start and end month. */
-function Axis({ selected, onSelect }: { selected: string; onSelect: (id: string) => void }) {
-  const min = Math.min(...experience.map((r) => monthIndex(r.start)));
-  const max = monthIndex(timelineNow) + 1;
-  const span = max - min;
-  const firstYear = Math.floor(min / 12) + 1;
-  const years: number[] = [];
-  for (let y = firstYear; y * 12 < max; y++) years.push(y);
-
-  return (
-    <div className="axis" aria-hidden="true">
-      <div className="axis__years">
-        {years.map((y) => (
-          <span key={y} className="axis__year mono" style={{ left: `${((y * 12 - min) / span) * 100}%` }}>
-            {y}
-          </span>
-        ))}
-      </div>
-      <div className="axis__rows">
-        {experience.map((r) => {
-          const s = monthIndex(r.start) - min;
-          const e = monthIndex(r.end) + 1 - min;
-          return (
-            <div key={r.id} className="axis__row">
-              <button
-                type="button"
-                tabIndex={-1}
-                className="axis__bar"
-                data-active={selected === r.id || undefined}
-                data-present={r.end === "present" || undefined}
-                style={{ left: `${(s / span) * 100}%`, width: `${((e - s) / span) * 100}%` }}
-                onClick={() => onSelect(r.id)}
-                title={`${r.company} · ${formatRange(r.start, r.end)}`}
-              >
-                <span className="axis__lbl mono">{r.company}</span>
-              </button>
-            </div>
-          );
-        })}
-      </div>
-      <span className="axis__now mono" style={{ left: `${((monthIndex(timelineNow) + 0.5 - min) / span) * 100}%` }}>
-        now
-      </span>
-    </div>
-  );
-}
-
+/**
+ * Experience as a logic-analyzer capture: one channel per role, high while
+ * the role was active. Rows are tabs (arrow keys, Home, End); the decode
+ * panel below shows the selected role in full.
+ */
 export function Experience() {
   const [selected, setSelected] = useState(experience[0].id);
-  const wide = useMediaQuery("(min-width: 900px)");
-  const tabsRef = useRef<HTMLDivElement>(null);
+  const rowsRef = useRef<HTMLDivElement>(null);
   const hash = useHash();
   const selfSet = useRef(false);
 
-  // Deep link: #experience/<role-id>
   useEffect(() => {
     if (hash.section === "experience" && hash.sub && experience.some((r) => r.id === hash.sub)) {
       setSelected(hash.sub);
@@ -129,7 +81,7 @@ export function Experience() {
     setHash(`#experience/${id}`, "replace");
   };
 
-  const onTabKey = (e: React.KeyboardEvent, i: number) => {
+  const onKey = (e: React.KeyboardEvent, i: number) => {
     let n = -1;
     if (e.key === "ArrowDown" || e.key === "ArrowRight") n = (i + 1) % experience.length;
     if (e.key === "ArrowUp" || e.key === "ArrowLeft") n = (i - 1 + experience.length) % experience.length;
@@ -138,40 +90,60 @@ export function Experience() {
     if (n < 0) return;
     e.preventDefault();
     choose(experience[n].id);
-    tabsRef.current?.querySelectorAll<HTMLButtonElement>("[role=tab]")[n]?.focus();
+    rowsRef.current?.querySelectorAll<HTMLButtonElement>("[role=tab]")[n]?.focus();
   };
 
   const selIdx = experience.findIndex((r) => r.id === selected);
-  const selRole = experience[selIdx];
+  const sel = experience[selIdx];
+  const a = pos(monthIndex(sel.start));
+  const b = Math.min(1, pos(monthIndex(sel.end) + 1));
+
+  // Quarter ticks, labelled at each new year.
+  const ticks: { p: number; label?: string }[] = [];
+  for (let m = MIN; m <= MAX; m++) {
+    if (m % 3 === 0) ticks.push({ p: pos(m), label: m % 12 === 0 ? String(m / 12) : undefined });
+  }
 
   return (
     <section id="experience" className="section experience" aria-labelledby="experience-title">
       <div className="wrap">
         <SectionHeader
           id="experience"
-          addr="0x02"
-          kicker="Memory · Experience"
-          title={
-            <>
-              Experience, <span className="serif">in order</span>
-            </>
-          }
+          title="Experience"
           lede={
             <p>
-              Five roles as supplied from LinkedIn. Titles, companies, types and dates are exact; descriptions are templates
-              for Zeeshan to complete.
+              Five roles as supplied from LinkedIn, captured like logic-analyzer channels: each line goes high while the role
+              was active. Titles, companies, types and dates are exact; descriptions are templates to complete.
             </p>
           }
         />
 
-        <div data-reveal>
-          <Axis selected={selected} onSelect={choose} />
-        </div>
+        <div className="la" data-reveal>
+          <div className="la__bar mono" aria-hidden="true">
+            <span>Capture · {experience.length} channels</span>
+            <span>
+              {formatMonth(formatSortedStart())} → {formatMonth(timelineNow)}
+            </span>
+          </div>
 
-        {wide ? (
-          <div className="xp" data-reveal>
-            <div className="xp__list" role="tablist" aria-orientation="vertical" aria-label="Roles" ref={tabsRef}>
-              {experience.map((r, i) => (
+          <div className="la__axis" aria-hidden="true">
+            <span />
+            <div className="la__ticks">
+              {ticks.map((t, i) => (
+                <span key={i} className={t.label ? "is-year" : ""} style={{ left: `${t.p * 100}%` }}>
+                  {t.label ? <em className="mono">{t.label}</em> : null}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="la__rows" role="tablist" aria-orientation="vertical" aria-label="Roles" ref={rowsRef}>
+            {experience.map((r, i) => {
+              const s = pos(monthIndex(r.start)) * 1000;
+              const e = Math.min(1, pos(monthIndex(r.end) + 1)) * 1000;
+              const present = r.end === "present";
+              const d = `M0 30H${s.toFixed(1)}V8H${e.toFixed(1)}${present ? "" : "V30H1000"}`;
+              return (
                 <button
                   key={r.id}
                   type="button"
@@ -180,62 +152,45 @@ export function Experience() {
                   aria-selected={selected === r.id}
                   aria-controls="xp-panel"
                   tabIndex={selected === r.id ? 0 : -1}
-                  className="xrow"
+                  className="la__row"
                   onClick={() => choose(r.id)}
-                  onKeyDown={(e) => onTabKey(e, i)}
+                  onKeyDown={(ev) => onKey(ev, i)}
                 >
-                  <span className="xrow__addr mono">{addr(i)}</span>
-                  <span className="xrow__main">
-                    <span className="xrow__company">{r.company}</span>
-                    <span className="xrow__title">{r.title}</span>
+                  <span className="la__label">
+                    <span className="la__ch mono">D{i}</span>
+                    <span className="la__who">
+                      <span className="la__company">{r.company}</span>
+                      <span className="la__role">{r.title}</span>
+                      <span className="la__dates mono">
+                        {formatRange(r.start, r.end)} · {r.employmentType}
+                      </span>
+                    </span>
                   </span>
-                  <span className="xrow__meta mono">
-                    <span>{formatRange(r.start, r.end)}</span>
-                    <span className="xrow__type">{r.employmentType}</span>
-                  </span>
-                  <span className="xrow__bus" aria-hidden="true" />
+                  <svg className="la__wave" viewBox="0 0 1000 38" preserveAspectRatio="none" aria-hidden="true">
+                    <path d={d} vectorEffect="non-scaling-stroke" />
+                  </svg>
                 </button>
-              ))}
-            </div>
-            <div className="xp__panel card" role="tabpanel" id="xp-panel" aria-labelledby={`xp-tab-${selected}`} tabIndex={0}>
-              <RoleDetail key={selected} role={selRole} i={selIdx} />
-            </div>
-          </div>
-        ) : (
-          <ul className="xacc" data-reveal>
-            {experience.map((r, i) => {
-              const open = selected === r.id;
-              return (
-                <li key={r.id} className="xacc__item" data-open={open || undefined}>
-                  <h3 className="xacc__h">
-                    <button
-                      type="button"
-                      className="xrow"
-                      aria-expanded={open}
-                      aria-controls={`xacc-${r.id}`}
-                      onClick={() => choose(r.id)}
-                    >
-                      <span className="xrow__addr mono">{addr(i)}</span>
-                      <span className="xrow__main">
-                        <span className="xrow__company">{r.company}</span>
-                        <span className="xrow__title">{r.title}</span>
-                      </span>
-                      <span className="xrow__meta mono">
-                        <span>{formatRange(r.start, r.end)}</span>
-                        <span className="xrow__type">{r.employmentType}</span>
-                      </span>
-                      <span className="xacc__chev" aria-hidden="true" />
-                    </button>
-                  </h3>
-                  <div id={`xacc-${r.id}`} className="xacc__panel" hidden={!open}>
-                    <RoleDetail role={r} i={i} inline />
-                  </div>
-                </li>
               );
             })}
-          </ul>
-        )}
+
+            {/* Measurement cursors on the selected channel */}
+            <span className="la__cursor" style={{ ["--p" as string]: a }} aria-hidden="true">
+              <em className="mono">A</em>
+            </span>
+            <span className="la__cursor" style={{ ["--p" as string]: b }} aria-hidden="true">
+              <em className="mono">B</em>
+            </span>
+          </div>
+
+          <div className="la__panel" role="tabpanel" id="xp-panel" aria-labelledby={`xp-tab-${selected}`}>
+            <RoleDetail role={sel} ch={selIdx} />
+          </div>
+        </div>
       </div>
     </section>
   );
+}
+
+function formatSortedStart() {
+  return experience.map((r) => r.start).sort()[0];
 }

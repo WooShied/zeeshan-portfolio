@@ -55,7 +55,7 @@ export function ArchExplorer() {
     <div className="lab-panel arch">
       <div className="lab-panel__head">
         <div>
-          <h3 className="lab-panel__title">System architecture explorer</h3>
+          <h3 className="lab-panel__title">Fig. 2 · Example system architecture</h3>
           <p className="lab-panel__sub">
             An example device: a sensor, a controller, a communication interface and a host application. Select a block to
             trace its data paths.
@@ -64,12 +64,12 @@ export function ArchExplorer() {
         <StatusTag kind="demo" />
       </div>
 
-      <div className="arch__paths" role="group" aria-label="Highlight a data path">
+      <div className="arch__paths seg-bar" role="group" aria-label="Highlight a data path">
         {archPaths.map((p) => (
           <button
             key={p.id}
             type="button"
-            className="chip"
+            className="seg-bar__btn"
             aria-pressed={path === p.id}
             onClick={() => {
               setPath((c) => (c === p.id ? null : p.id));

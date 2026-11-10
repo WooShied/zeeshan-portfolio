@@ -369,19 +369,19 @@ export const boardMap = [
   { id: "cpu", ref: "U1", name: "Processor", section: "about", sectionLabel: "About", blurb: "Who Zeeshan is and what he’s interested in." },
   { id: "mem", ref: "U2", name: "Memory", section: "experience", sectionLabel: "Experience", blurb: "Five roles, stored in order, read on demand." },
   { id: "io", ref: "J1", name: "I/O connectors", section: "projects", sectionLabel: "Projects", blurb: "Case studies: what goes in, what comes out." },
-  { id: "dbg", ref: "J2", name: "Debug interface", section: "lab", sectionLabel: "Interactive Lab", blurb: "Probe a signal, a scheduler and a data path." },
+  { id: "dbg", ref: "J2", name: "Debug interface", section: "lab", sectionLabel: "Signal lab", blurb: "Probe a live signal and watch it alias." },
   { id: "rf", ref: "M1", name: "Communications module", section: "contact", sectionLabel: "Contact", blurb: "Open a channel. LinkedIn is live." },
 ] as const;
 
-/* ── Section list (navigation, command palette, rail) ──────── */
+/* ── Section list (sheet index, command palette) ─────────── */
 export const sections = [
-  { id: "top", label: "Board", addr: "0x00" },
-  { id: "projects", label: "Projects", addr: "0x01" },
-  { id: "experience", label: "Experience", addr: "0x02" },
-  { id: "approach", label: "Approach", addr: "0x03" },
-  { id: "lab", label: "Lab", addr: "0x04" },
-  { id: "about", label: "About", addr: "0x05" },
-  { id: "contact", label: "Contact", addr: "0x06" },
+  { id: "top", label: "General arrangement", short: "Board", sheet: "01", kicker: "Hero" },
+  { id: "projects", label: "Projects", short: "Projects", sheet: "02", kicker: "Drawing register" },
+  { id: "experience", label: "Experience", short: "Experience", sheet: "03", kicker: "Logic capture" },
+  { id: "approach", label: "Approach", short: "Approach", sheet: "04", kicker: "General notes" },
+  { id: "lab", label: "Signal lab", short: "Lab", sheet: "05", kicker: "Test bench" },
+  { id: "about", label: "About", short: "About", sheet: "06", kicker: "Datasheet" },
+  { id: "contact", label: "Contact", short: "Contact", sheet: "07", kicker: "Interface" },
 ] as const;
 
 export type SectionId = (typeof sections)[number]["id"];

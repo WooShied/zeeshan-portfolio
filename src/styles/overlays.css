@@ -21,7 +21,6 @@ dialog::backdrop {
   width: min(1120px, 100vw - 32px);
   height: calc(100dvh - 32px);
   margin: 16px auto;
-  border-radius: 22px;
   border: 1px solid var(--line-2);
   background: var(--bg);
   box-shadow: 0 60px 120px -30px rgba(0, 0, 0, 0.9);
@@ -70,7 +69,6 @@ dialog::backdrop {
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
   border: 1px solid var(--line-2);
   background: transparent;
   transition:
@@ -107,10 +105,11 @@ dialog::backdrop {
   letter-spacing: 0.08em;
 }
 .cs__title {
+  font-family: var(--display);
   font-size: var(--step-3);
-  line-height: 1.04;
-  letter-spacing: -0.03em;
-  font-weight: 650;
+  line-height: 0.95;
+  font-weight: 600;
+  text-transform: uppercase;
   outline: none;
 }
 .cs__sum {
@@ -195,7 +194,6 @@ dialog::backdrop {
 .cs__stack > div,
 .cs__rl > div {
   padding: 16px;
-  border-radius: 12px;
   border: 1px solid var(--line);
   background: var(--bg-1);
 }
@@ -225,10 +223,8 @@ dialog::backdrop {
   width: 8px;
   height: 8px;
   border: 1.5px solid var(--sig);
-  border-radius: 2px;
 }
 .cs__decision {
-  border-radius: 12px;
   border: 1px solid var(--line-2);
   background: var(--bg-1);
   overflow: hidden;
@@ -279,7 +275,6 @@ dialog::backdrop {
   flex-direction: column;
   gap: 4px;
   padding: 16px;
-  border-radius: 14px;
   border: 1px solid var(--line-2);
   background: transparent;
   text-align: left;
@@ -307,7 +302,6 @@ dialog::backdrop {
     width: 100vw;
     height: 100dvh;
     margin: 0;
-    border-radius: 0;
     border: 0;
   }
   .cs__layout {
@@ -340,12 +334,8 @@ dialog::backdrop {
 .pal {
   width: min(640px, 100vw - 24px);
   margin: min(14vh, 120px) auto auto;
-  border-radius: 18px;
   border: 1px solid var(--line-2);
   background: rgba(20, 24, 25, 0.96);
-  box-shadow:
-    0 50px 100px -30px rgba(0, 0, 0, 0.95),
-    0 0 0 1px rgba(var(--sig-rgb), 0.08);
   overflow: hidden;
 }
 .pal[open] {
@@ -392,7 +382,6 @@ dialog::backdrop {
 .pal__esc {
   font-size: 0.7rem;
   padding: 4px 8px;
-  border-radius: 6px;
   border: 1px solid var(--line-2);
   background: var(--bg-2);
   color: var(--mute);
@@ -416,7 +405,6 @@ dialog::backdrop {
   gap: 12px;
   min-height: 44px;
   padding: 8px 12px;
-  border-radius: 10px;
   cursor: pointer;
   color: var(--fg-2);
   border: 1px solid transparent;
@@ -485,10 +473,9 @@ dialog::backdrop {
 }
 .toast:not(:empty) {
   padding: 8px 14px;
-  border-radius: 999px;
   background: var(--fg);
   color: var(--bg);
-  animation: readIn 0.3s var(--ease);
+  animation: tIn 0.3s var(--ease);
 }
 
 /* ── Boot overlay ────────────────────────────────────────── */
@@ -550,7 +537,6 @@ dialog::backdrop {
   font-family: var(--mono);
   font-size: 0.7rem;
   padding: 4px 10px;
-  border-radius: 999px;
 }
 
 /* Off-screen decorative animation pauses. */

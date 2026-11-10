@@ -1,19 +1,19 @@
-/* ── Design tokens ────────────────────────────────────────────
-   Graphite surfaces, warm off-white type, one restrained cyan
-   for "live signal", amber only for status and draft labels.  */
+/* ── Design tokens · "engineering drawing" ─────────────────────
+   A drafted sheet in graphite: hairline rules, square corners,
+   crop marks, IBM Plex throughout. Cyan is linework and live
+   signal; amber is status and draft labels only. No glows.     */
 
 :root {
-  --bg: #0d0f10;
-  --bg-1: #121516;
-  --bg-2: #171b1c;
-  --bg-3: #1e2324;
-  --bg-4: #272d2e;
-  --fg: #ede7dc;
-  --fg-2: #c9c3b7;
-  --mute: #9c978d;
-  --line: rgba(237, 231, 220, 0.08);
-  --line-2: rgba(237, 231, 220, 0.15);
-  --line-3: rgba(237, 231, 220, 0.24);
+  --bg: #121314;
+  --bg-1: #17191a;
+  --bg-2: #1d2021;
+  --bg-3: #25292a;
+  --fg: #ece6da;
+  --fg-2: #c7c1b5;
+  --mute: #9a958b;
+  --line: rgba(236, 230, 218, 0.11);
+  --line-2: rgba(236, 230, 218, 0.2);
+  --line-3: rgba(236, 230, 218, 0.34);
 
   --sig: #5fd4cc;
   --sig-rgb: 95, 212, 204;
@@ -23,32 +23,38 @@
   --red: #ff7a66;
 
   /* PCB palette for the hero board */
-  --pcb: #111819;
-  --pcb-2: #0e1415;
   --copper: #2b3a3a;
   --copper-2: #3a4c4b;
   --pad: #9c8656;
-  --silk: rgba(237, 231, 220, 0.5);
+  --silk: rgba(236, 230, 218, 0.5);
 
-  --sans: "Hanken Grotesk Variable", "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --sans: "IBM Plex Sans Variable", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  --step--2: clamp(0.72rem, 0.7rem + 0.08vw, 0.76rem);
-  --step--1: clamp(0.82rem, 0.8rem + 0.1vw, 0.88rem);
-  --step-0: clamp(1rem, 0.97rem + 0.18vw, 1.09rem);
-  --step-1: clamp(1.15rem, 1.07rem + 0.4vw, 1.38rem);
-  --step-2: clamp(1.45rem, 1.25rem + 0.9vw, 2.05rem);
-  --step-3: clamp(2rem, 1.5rem + 2.2vw, 3.3rem);
-  --step-4: clamp(2.6rem, 1.6rem + 4.4vw, 5.6rem);
+  --step--2: 0.72rem;
+  --step--1: 0.84rem;
+  --step-0: clamp(1rem, 0.97rem + 0.15vw, 1.07rem);
+  --step-1: clamp(1.12rem, 1.05rem + 0.35vw, 1.32rem);
+  --step-2: clamp(1.4rem, 1.2rem + 0.9vw, 1.95rem);
+  --step-3: clamp(2.4rem, 1.6rem + 3.4vw, 5rem);
+  --step-4: clamp(3.6rem, 1.8rem + 8vw, 10rem);
 
-  --gutter: clamp(16px, 4vw, 48px);
-  --maxw: 1320px;
-  --radius: 18px;
-  --radius-sm: 10px;
-  --bar-h: 64px;
+  --gutter: clamp(18px, 3.4vw, 48px);
+  --maxw: 1200px;
+  --side-w: 0px;
+  --frame: 0px;
+  --bar-h: 52px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
 
   color-scheme: dark;
+}
+
+@media (min-width: 1100px) {
+  :root {
+    --side-w: 252px;
+    --frame: 12px;
+    --bar-h: 0px;
+  }
 }

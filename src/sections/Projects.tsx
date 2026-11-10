@@ -93,104 +93,99 @@ export function Projects() {
       <div className="wrap">
         <SectionHeader
           id="projects"
-          addr="0x01"
-          kicker="I/O · Selected projects"
-          title={
-            <>
-              Selected <span className="serif">projects</span>
-            </>
-          }
+          title="Projects"
           lede={
             <p>
-              Case studies laid out the way an engineering review reads: problem, contribution, architecture, constraints,
-              validation, results. The three below are structures waiting for Zeeshan’s real work.
+              Each project is filed like a drawing: problem, contribution, architecture, constraints, validation and results.
+              The three below are structures waiting for Zeeshan’s real work.
             </p>
           }
         />
 
         <div className="pfilters" data-reveal>
-          <div className="pfilters__chips" role="group" aria-label="Filter projects by area">
+          <div className="seg-bar" role="group" aria-label="Filter projects by area">
             {projectFilters.map((f) => (
               <button
                 key={f.id}
                 type="button"
-                className="chip"
+                className="seg-bar__btn"
                 aria-pressed={filter === f.id}
                 onClick={() => setFilter(f.id)}
                 disabled={counts[f.id] === 0}
               >
                 {f.label}
-                <span className="chip__count mono">{counts[f.id]}</span>
+                <span className="seg-bar__count mono">{counts[f.id]}</span>
               </button>
             ))}
           </div>
-          <label className="pfilters__search">
+          <label className="field">
             <span className="sr-only">Search projects</span>
             <svg viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
-              <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
+              <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.4" />
             </svg>
             <input type="search" placeholder="Search projects" value={query} onChange={(e) => setQuery(e.target.value)} />
           </label>
         </div>
 
         <p className="pfilters__status mono" aria-live="polite">
-          Showing {visible.length} of {projects.length} · {filterLabel}
+          {visible.length} of {projects.length} drawings · {filterLabel}
           {query ? ` · “${query}”` : ""}
         </p>
 
-        {visible.length ? (
-          <ul className="pgrid" data-count={visible.length}>
-            {visible.map((p, i) => (
-              <li key={p.slug} className="pgrid__item" style={{ animationDelay: `${i * 60}ms` }}>
-                <article className="pcard card" aria-labelledby={`pc-${p.slug}`}>
-                  <div className="pcard__top">
-                    <span className="pcard__idx mono">{p.index}</span>
-                    <ul className="pcard__tags" aria-label="Areas">
-                      {p.tags.map((t) => (
-                        <li key={t} className="mono">
-                          {projectFilters.find((f) => f.id === t)?.label}
-                        </li>
-                      ))}
-                    </ul>
+        <div className="register" data-reveal>
+          <div className="register__head mono" aria-hidden="true">
+            <span>Doc no.</span>
+            <span>Title</span>
+            <span>Areas</span>
+            <span>Status</span>
+          </div>
+          {visible.length ? (
+            <ul className="register__list">
+              {visible.map((p, i) => (
+                <li key={p.slug} className="reg" style={{ animationDelay: `${i * 50}ms` }}>
+                  <span className="reg__doc mono">{p.index}</span>
+                  <div className="reg__main">
+                    <h3 id={`pc-${p.slug}`} className="reg__title">
+                      {p.title}
+                    </h3>
+                    <p className="reg__sum">{p.summary}</p>
+                    <MiniFlow p={p} />
                   </div>
-                  {p.kind === "illustrative" ? <StatusTag kind="illustrative" className="pcard__flag" /> : null}
-                  <h3 id={`pc-${p.slug}`} className="pcard__title">
-                    {p.title}
-                  </h3>
-                  <p className="pcard__sum">{p.summary}</p>
-                  <MiniFlow p={p} />
-                  <div className="pcard__foot">
-                    <button type="button" className="btn btn--ghost btn--sm" data-open={p.slug} onClick={() => open(p.slug)}>
-                      Open case study
+                  <ul className="reg__areas mono" aria-label="Areas">
+                    {p.tags.map((t) => (
+                      <li key={t}>{projectFilters.find((f) => f.id === t)?.label}</li>
+                    ))}
+                  </ul>
+                  <div className="reg__status">
+                    {p.kind === "illustrative" ? <StatusTag kind="illustrative" /> : <StatusTag status={p.status} />}
+                    <button type="button" className="btn btn--sm reg__open" data-open={p.slug} onClick={() => open(p.slug)}>
+                      Open drawing
                       <span className="sr-only">: {p.title}</span>
                       <svg viewBox="0 0 16 16" aria-hidden="true" className="btn__icon btn__icon--r">
-                        <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.4" />
                       </svg>
                     </button>
-                    <span className="pcard__fields mono" aria-hidden="true">
-                      8 fields · {p.links.filter((l) => l.href).length} links
-                    </span>
                   </div>
-                </article>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="pempty">
-            <p>No projects match that filter.</p>
-            <button
-              type="button"
-              className="btn btn--ghost btn--sm"
-              onClick={() => {
-                setFilter("all");
-                setQuery("");
-              }}
-            >
-              Clear filters
-            </button>
-          </div>
-        )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="pempty">
+              <p>No drawings match that filter.</p>
+              <button
+                type="button"
+                className="btn btn--sm"
+                onClick={() => {
+                  setFilter("all");
+                  setQuery("");
+                }}
+              >
+                Clear filters
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <CaseStudy slug={openSlug} onClose={close} onNavigate={(s) => setHash(`#projects/${s}`, "replace")} />

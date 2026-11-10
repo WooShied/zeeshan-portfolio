@@ -8,16 +8,7 @@ export function About() {
   return (
     <section id="about" className="section about" aria-labelledby="about-title">
       <div className="wrap">
-        <SectionHeader
-          id="about"
-          addr="0x05"
-          kicker="Processor · About"
-          title={
-            <>
-              About <span className="serif">Zeeshan</span>
-            </>
-          }
-        />
+        <SectionHeader id="about" title="About" />
 
         <div className="ds" data-reveal>
           <div className="ds__head mono" aria-hidden="true">

@@ -5,49 +5,54 @@ import { emit, EV } from "../lib";
 import { MOD_KEY } from "../components/Nav";
 
 export function Hero() {
+  const [first, ...rest] = identity.name.split(" ");
   return (
     <section id="top" className="hero" aria-labelledby="hero-name">
-      <div className="wrap hero__grid">
-        <div className="hero__copy">
-          <p className="hero__pos mono">
-            <span className="hero__pos-text">{identity.positioning.text}</span>
-          </p>
-          <StatusTag status={identity.positioning.status} className="hero__tag" />
+      <div className="wrap">
+        <p className="hero__dwg mono">
+          <span>DWG {identity.initials}-01</span>
+          <span>Sheet 01 / 07</span>
+          <span>General arrangement</span>
+        </p>
 
+        <div className="hero__head">
           <h1 id="hero-name" className="hero__name">
-            {identity.name}
+            <span>{first}</span> <span>{rest.join(" ")}</span>
           </h1>
 
-          <p className="hero__headline serif">{identity.headline.text}</p>
-          <StatusTag status={identity.headline.status} className="hero__tag" />
-
-          <p className="hero__intro">{identity.intro.text}</p>
-          <StatusTag status={identity.intro.status} className="hero__tag" />
-
-          <div className="hero__ctas">
-            <a className="btn btn--primary" href="#projects">
-              View projects
-            </a>
-            <a className="btn btn--ghost" href="#experience">
-              Experience
-            </a>
-            <a className="btn btn--ghost" href="#contact">
-              Contact
-            </a>
+          <div className="hero__lede">
+            <div className="hero__item">
+              <p className="hero__pos mono">{identity.positioning.text}</p>
+              <StatusTag status={identity.positioning.status} />
+            </div>
+            <div className="hero__item">
+              <p className="hero__headline">{identity.headline.text}</p>
+              <StatusTag status={identity.headline.status} />
+            </div>
+            <div className="hero__item">
+              <p className="hero__intro">{identity.intro.text}</p>
+              <StatusTag status={identity.intro.status} />
+            </div>
+            <div className="hero__ctas">
+              <a className="btn btn--primary" href="#projects">
+                View projects
+              </a>
+              <a className="btn" href="#experience">
+                Experience
+              </a>
+              <a className="btn" href="#contact">
+                Contact
+              </a>
+              <button type="button" className="kbd-btn" onClick={() => emit(EV.palette)}>
+                <kbd>{MOD_KEY}</kbd>
+                <kbd>K</kbd>
+                <span>search</span>
+              </button>
+            </div>
           </div>
-
-          <p className="hero__kbd mono">
-            <button type="button" className="kbd-btn" onClick={() => emit(EV.palette)}>
-              <kbd>{MOD_KEY}</kbd>
-              <kbd>K</kbd>
-              <span>search the site</span>
-            </button>
-          </p>
         </div>
 
-        <div className="hero__board">
-          <Board />
-        </div>
+        <Board />
       </div>
     </section>
   );

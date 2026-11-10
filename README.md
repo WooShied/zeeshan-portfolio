@@ -1,6 +1,6 @@
 # Zeeshan Malik · portfolio (review draft)
 
-A single-page portfolio built around one idea: **exploring an embedded system**. The hero is a circuit board whose components are the site's sections, and every section borrows from the same instrument language: memory addresses, datasheets, scopes, and block diagrams.
+A single-page portfolio drawn as an **engineering drawing set**. Each section is a numbered sheet, the hero is a circuit board with dimension lines and a bill of materials, and every part of the board leads to a sheet.
 
 This is a **review draft**. Anything Zeeshan hasn't confirmed carries a visible amber label, `Placeholder · Awaiting Zeeshan approval`, right next to it. The checklist of everything he needs to confirm is in [docs/CONTENT-CHECKLIST.md](docs/CONTENT-CHECKLIST.md).
 
@@ -26,28 +26,28 @@ npm run build
 
 ## Visual concept
 
-- **The board is the navigation.** Processor → About, Memory → Experience, I/O → Projects, Debug → Lab, Comms → Contact. Hovering or focusing a part lights its copper traces; selecting it shows where it leads. "Inspect system" separates the board into three layers (substrate, copper, components) with labels that stand up off the board.
-- **One signal colour.** Graphite surfaces, warm off-white type, a restrained cyan for live signals, amber only for status and draft labels.
-- **Type.** Hanken Grotesk for reading, Instrument Serif italics for editorial accents, IBM Plex Mono for technical labels.
-- **Each section has its own instrument.** Experience is a memory map, Approach is a schematic list and a parts list, the Lab is a bench with probe channels, About is a datasheet page, Contact is a comms panel.
+- **A drawing set, not a dashboard.** Square corners, hairline rules, tick-marked section rules, a dot-grid drafting background and a zone-ruled frame. No rounded cards, pills or glows.
+- **Sheet index + title block.** On desktop, a left sidebar lists the seven sheets on a vertical bus whose lit length follows scroll; a title block shows the current sheet, title and revision. On phones, a compact strip shows `03/07 Experience` with an Index sheet.
+- **The board is the navigation.** Processor → About, Memory → Experience, I/O → Projects, Debug → Signal lab, Comms → Contact. Numbered balloons and a bill-of-materials table do the same job. "Inspect system" separates the board into substrate, copper and component layers.
+- **Type.** IBM Plex throughout, like a datasheet: Plex Sans Condensed for titles, Plex Sans for reading, Plex Mono for labels.
+- **Colour.** Graphite, warm off-white, cyan for linework and live signal, amber only for status and draft labels.
 
 ## Interactive features
 
 | Feature | Where | Notes |
 |---|---|---|
-| Interactive circuit board | Hero | Pointer parallax and moving light (desktop), trace illumination, numbered hotspots, selection readout, legend with the same five controls, Escape to clear |
-| Inspect system (exploded view) | Hero toolbar, command palette | 3D layer separation with standing labels; flat fallback without 3D support |
-| Project explorer | Projects | Area filters with counts, keyword search, live result count, empty state |
-| Case studies | Projects | Native modal dialog, deep links (`#projects/<slug>`), section index that tracks your reading, expandable architecture diagram with selectable blocks, decision panels, prev/next |
-| Experience timeline | Experience | Time-axis bars, memory-map rows (arrow keys / Home / End), detail panel; accordion on phones; deep links (`#experience/<role>`) |
-| Signal lab | Lab → CH1 | Frequency, sample rate, noise, waveform, reconstruction mode; live scope + DFT; Nyquist/aliasing readouts; Pause, Reset |
-| Task scheduler | Lab → CH2 | Rate-monotonic vs earliest-deadline-first, per-task period and cost, utilization vs RM bound, deadline misses, Pause, Reset |
-| Architecture explorer | Lab → CH3 | Clickable sensor → controller → comms → host diagram; telemetry and command paths |
-| Command palette | `Ctrl/⌘ K`, `/`, or the Search button | Sections, projects, roles, lab instruments, links, actions; full keyboard support |
-| Section tracking | Top bar, right rail | Sliding indicator, address readout, scroll-progress line, pin-header rail |
-| Startup sequence | First visit | About 1.5 s, once per session, skipped by any key or click, never shown with reduced motion or a deep link |
+| Interactive circuit board | Sheet 01 | Pointer tilt and light (desktop), trace illumination, numbered balloons, BOM table with the same five controls, "Go to sheet" readout, Escape to clear |
+| Inspect system (exploded view) | Sheet 01, command palette | 3D layer separation with standing labels and a layer key; flat fallback without 3D support |
+| Drawing register | Sheet 02 | Area filters with counts, keyword search, live count, empty state |
+| Case studies | Sheet 02 | Native modal dialog, deep links (`#projects/<slug>`), section index that tracks reading, expandable architecture diagram, decision panels, prev/next |
+| Logic-analyzer experience | Sheet 03 | One channel per role, high while active; A/B cursors mark the selected role; decode panel; arrow keys / Home / End; deep links (`#experience/<role>`) |
+| Example system figure | Sheet 04 | Clickable sensor → controller → comms → host diagram with telemetry and command paths (placeholder demonstration) |
+| Signal lab | Sheet 05 | One instrument: frequency, sample rate, noise, waveform, reconstruction; live scope + DFT; Nyquist/aliasing readouts; Pause, Reset |
+| Connector pinout | Sheet 07 | LinkedIn connected; email, GitHub and résumé shown as NC (not connected) until supplied |
+| Command palette | `Ctrl/⌘ K`, `/`, or Search | Sections, projects, roles, links, actions; full keyboard support |
+| Startup sequence | First visit | About 1.5 s, once per session, skipped by any key or click, never with reduced motion or a deep link |
 
-All lab instruments are labelled `Interactive demo · Simulated data.` The architecture explorer is labelled `Placeholder demonstration · Awaiting Zeeshan approval.`
+The signal lab is labelled `Interactive demo · Simulated data.` The example system figure is labelled `Placeholder demonstration · Awaiting Zeeshan approval.`
 
 ## Editing content
 
@@ -64,6 +64,7 @@ All lab instruments are labelled `Interactive demo · Simulated data.` The archi
 | Email, GitHub, résumé, LinkedIn | `links` |
 | Architecture explorer example | `archNodes`, `archPaths` |
 | What each board component links to | `boardMap` |
+| Sheet names, numbers and order | `sections` |
 | "Present" on the timeline axis | `timelineNow` (update occasionally) |
 | Wording of the labels themselves | `labels` |
 
@@ -99,9 +100,9 @@ headline: { text: "Code, signals, and the physical world.", status: "approved" }
 - Semantic sections with one `h1` and an `h2` per section; skip link; visible focus rings everywhere.
 - Every board hotspot, diagram node, and filter is a real `<button>`; the board also has a plain legend with the same actions.
 - Dialogs use native `<dialog>` (focus is trapped, Escape closes, focus returns to what opened it). Browser Back also closes a case study.
-- Reduced motion: no parallax, trace pulses, or startup sequence; instruments start paused (Run still works); reveals are instant.
+- Reduced motion: no parallax, trace pulses, or startup sequence; the signal lab starts paused (Run still works); reveals are instant.
 - Content is never hidden behind animation: reveals fall back to visible after 1.2 s, and a `<noscript>` block lists the supplied experience and LinkedIn.
-- The lab code loads only when you scroll near it. Animation pauses when its section is off-screen (canvas loops, CSS pulses, board effects).
+- The signal lab loads only when you scroll near it. Animation pauses when its section is off-screen (canvas loops, CSS pulses, board effects).
 - No autoplay audio, no external requests at runtime; fonts are self-hosted.
 
 ## Project structure
@@ -117,7 +118,7 @@ src/
   hooks/                   useHash, useMediaQuery, useInView
   components/
     board/                 Hero circuit board (geometry, SVG layers, interactions)
-    Nav.tsx                Top bar + right rail
+    Nav.tsx                Sidebar sheet index + title block, phone strip, drawing frame
     CommandPalette.tsx     Ctrl/⌘ K palette
     CaseStudy.tsx          Case-study dialog
     FlowDiagram.tsx        Expandable block diagram
@@ -125,7 +126,7 @@ src/
     Slots.tsx              Highlights [bracketed] gaps
     Boot.tsx, Footer.tsx, SectionHeader.tsx, LinkButton.tsx
   sections/                Hero, Projects, Experience, Approach, Lab, About, Contact
-  lab/                     SignalLab, SchedulerLab, ArchExplorer (lazy-loaded)
+  lab/                     SignalLab (lazy-loaded), ArchExplorer (example system figure)
   styles/                  tokens, base, ui, hero, sections, lab, overlays
 docs/CONTENT-CHECKLIST.md  What Zeeshan needs to confirm
 ```

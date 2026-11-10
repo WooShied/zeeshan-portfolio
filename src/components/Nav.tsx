@@ -1,10 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { identity, sections } from "../content/site";
 import { emit, EV } from "../lib";
 
-const NAV = sections.filter((s) => s.id !== "top");
-
-/** Which section is in the middle of the viewport. Shared by the bar and the rail. */
+/** Which section is in the middle of the viewport. */
 export function useActiveSection() {
   const [current, setCurrent] = useState<string>("top");
   useEffect(() => {
@@ -23,29 +21,14 @@ export function useActiveSection() {
   return current;
 }
 
-const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
-export const MOD_KEY = isMac ? "⌘" : "Ctrl";
-
-/**
- * Top bar: name, numbered section links with a sliding indicator,
- * an address readout of the current section, the command palette
- * button, and a scroll-progress signal line.
- */
-export function Nav() {
-  const current = useActiveSection();
-  const [open, setOpen] = useState(false);
-  const linksRef = useRef<HTMLUListElement>(null);
-  const barRef = useRef<HTMLElement>(null);
-  const menuBtn = useRef<HTMLButtonElement>(null);
-  const [indicator, setIndicator] = useState<{ x: number; w: number } | null>(null);
-
+/** Scroll progress 0…1 written to a CSS variable on the given element (no re-render). */
+function useProgressVar(ref: React.RefObject<HTMLElement>) {
   useEffect(() => {
     let raf = 0;
     const update = () => {
       raf = 0;
       const max = document.documentElement.scrollHeight - window.innerHeight;
-      barRef.current?.style.setProperty("--progress", String(max > 0 ? window.scrollY / max : 0));
-      barRef.current?.toggleAttribute("data-scrolled", window.scrollY > 8);
+      ref.current?.style.setProperty("--progress", String(max > 0 ? window.scrollY / max : 0));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -57,22 +40,34 @@ export function Nav() {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, []);
+  }, [ref]);
+}
 
-  useLayoutEffect(() => {
-    const ul = linksRef.current;
-    if (!ul) return;
-    const measure = () => {
-      const a = ul.querySelector<HTMLAnchorElement>('a[aria-current="true"]');
-      setIndicator(a ? { x: a.offsetLeft, w: a.offsetWidth } : null);
-    };
-    measure();
-    document.fonts?.ready.then(measure);
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [current]);
+const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
+export const MOD_KEY = isMac ? "⌘" : "Ctrl";
+const TOTAL = String(sections.length).padStart(2, "0");
 
-  // Close the mobile sheet with Escape; lock nothing else.
+const SearchIcon = () => (
+  <svg viewBox="0 0 16 16" aria-hidden="true">
+    <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
+    <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.4" />
+  </svg>
+);
+
+/**
+ * Drawing-sheet chrome. Desktop: a left sidebar with the sheet index
+ * (a vertical bus whose lit length follows scroll) and a title block.
+ * Small screens: a compact top strip with an index sheet.
+ */
+export function Nav() {
+  const current = useActiveSection();
+  const [open, setOpen] = useState(false);
+  const sideRef = useRef<HTMLElement>(null);
+  const barRef = useRef<HTMLElement>(null);
+  const menuBtn = useRef<HTMLButtonElement>(null);
+  useProgressVar(sideRef);
+  useProgressVar(barRef);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -88,100 +83,124 @@ export function Nav() {
   const sec = sections.find((s) => s.id === current) ?? sections[0];
 
   return (
-    <header className="bar" ref={barRef}>
-      <div className="bar__inner">
-        <a href="#top" className="bar__brand" aria-label={`${identity.name}, back to top`}>
-          <span className="bar__chip mono" aria-hidden="true">
+    <>
+      {/* Desktop sidebar */}
+      <aside className="side" ref={sideRef}>
+        <a href="#top" className="side__brand" aria-label={`${identity.name}, back to top`}>
+          <span className="side__mark mono" aria-hidden="true">
             {identity.initials}
           </span>
-          <span className="bar__name">{identity.name}</span>
+          <span className="side__who">
+            <span className="side__name">{identity.name}</span>
+            <span className="side__dwg mono">DWG {identity.initials}-01 · Portfolio</span>
+          </span>
         </a>
 
-        <nav aria-label="Sections" className="bar__nav">
-          <ul ref={linksRef}>
-            {NAV.map((n) => (
-              <li key={n.id}>
-                <a href={`#${n.id}`} aria-current={current === n.id ? "true" : undefined}>
-                  {n.label}
+        <nav className="index" aria-label="Sections">
+          <p className="index__k mono">Sheet index</p>
+          <ol>
+            {sections.map((s) => (
+              <li key={s.id}>
+                <a href={`#${s.id}`} aria-current={current === s.id ? "true" : undefined}>
+                  <span className="index__node" aria-hidden="true" />
+                  <span className="index__num mono">{s.sheet}</span>
+                  <span className="index__label">{s.short}</span>
                 </a>
               </li>
             ))}
-            {indicator ? (
-              <li
-                className="bar__indicator"
-                aria-hidden="true"
-                style={{ transform: `translateX(${indicator.x}px)`, width: indicator.w }}
-              />
-            ) : null}
-          </ul>
+          </ol>
+          <span className="index__bus" aria-hidden="true" />
         </nav>
 
-        <div className="bar__right">
-          <p className="bar__addr mono" aria-hidden="true">
-            <span className="led-dot led-dot--on" />
-            <span className="bar__addr-hex">{sec.addr}</span>
-            <span className="bar__addr-name" key={sec.id}>
+        <button type="button" className="side__search" onClick={() => emit(EV.palette)}>
+          <SearchIcon />
+          <span>Search</span>
+          <kbd className="mono">{MOD_KEY} K</kbd>
+        </button>
+
+        <dl className="tblock mono" aria-label="Current sheet">
+          <div className="tblock__wide">
+            <dt>Title</dt>
+            <dd key={sec.id} className="tblock__title">
               {sec.label}
-            </span>
-          </p>
-          <button type="button" className="bar__cmd" onClick={() => emit(EV.palette)} aria-label="Open command palette">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
-              <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <span className="bar__cmd-label">Search</span>
-            <kbd className="mono">{MOD_KEY} K</kbd>
-          </button>
-          <button
-            ref={menuBtn}
-            type="button"
-            className="bar__menu"
-            aria-expanded={open}
-            aria-controls="menu-sheet"
-            onClick={() => setOpen((o) => !o)}
-          >
-            <span className="bar__menu-lines" aria-hidden="true" />
-            {open ? "Close" : "Menu"}
-          </button>
-        </div>
-      </div>
-      <div className="bar__progress" aria-hidden="true" />
+            </dd>
+          </div>
+          <div>
+            <dt>Sheet</dt>
+            <dd>
+              {sec.sheet} / {TOTAL}
+            </dd>
+          </div>
+          <div>
+            <dt>Rev</dt>
+            <dd className="tblock__rev">A · Draft</dd>
+          </div>
+        </dl>
+      </aside>
 
-      <div id="menu-sheet" className="sheet" hidden={!open}>
-        <nav aria-label="Sections (menu)">
-          <ul>
-            {sections.map((n) => (
-              <li key={n.id}>
-                <a href={`#${n.id}`} aria-current={current === n.id ? "true" : undefined} onClick={() => setOpen(false)}>
-                  <span className="mono sheet__addr">{n.addr}</span>
-                  {n.id === "top" ? "Top" : n.label}
+      {/* Small-screen strip */}
+      <header className="mbar" ref={barRef}>
+        <a href="#top" className="mbar__brand" aria-label={`${identity.name}, back to top`}>
+          <span className="side__mark mono" aria-hidden="true">
+            {identity.initials}
+          </span>
+        </a>
+        <p className="mbar__sheet mono" aria-hidden="true">
+          <span className="mbar__num">
+            {sec.sheet}/{TOTAL}
+          </span>
+          <span key={sec.id} className="mbar__title">
+            {sec.short}
+          </span>
+        </p>
+        <button type="button" className="mbar__btn" onClick={() => emit(EV.palette)} aria-label="Search the site">
+          <SearchIcon />
+        </button>
+        <button
+          ref={menuBtn}
+          type="button"
+          className="mbar__btn mbar__btn--txt"
+          aria-expanded={open}
+          aria-controls="sheet-index"
+          onClick={() => setOpen((o) => !o)}
+        >
+          {open ? "Close" : "Index"}
+        </button>
+        <span className="mbar__progress" aria-hidden="true" />
+
+        <nav id="sheet-index" className="msheet" hidden={!open} aria-label="Sections (index)">
+          <ol>
+            {sections.map((s) => (
+              <li key={s.id}>
+                <a href={`#${s.id}`} aria-current={current === s.id ? "true" : undefined} onClick={() => setOpen(false)}>
+                  <span className="mono msheet__num">{s.sheet}</span>
+                  {s.label}
                 </a>
               </li>
             ))}
-          </ul>
+          </ol>
         </nav>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }
 
-/** Right-edge pin header: one pin per section, the current one lit. */
-export function Rail() {
-  const current = useActiveSection();
+/** Decorative drawing border with zone rulers (wide screens only). */
+export function Frame() {
+  const cols = Array.from({ length: 8 }, (_, i) => i + 1);
+  const rows = ["A", "B", "C", "D", "E", "F"];
   return (
-    <nav className="rail" aria-label="Section progress">
-      <ol>
-        {sections.map((s) => (
-          <li key={s.id}>
-            <a href={`#${s.id}`} aria-current={current === s.id ? "true" : undefined}>
-              <span className="rail__pin" aria-hidden="true" />
-              <span className="rail__label mono">
-                {s.addr} {s.id === "top" ? "Top" : s.label}
-              </span>
-            </a>
-          </li>
+    <div className="frame" aria-hidden="true">
+      <div className="frame__top mono">
+        {cols.map((c) => (
+          <span key={c}>{c}</span>
         ))}
-      </ol>
-    </nav>
+      </div>
+      <div className="frame__right mono">
+        {rows.map((r) => (
+          <span key={r}>{r}</span>
+        ))}
+      </div>
+    </div>
   );
 }

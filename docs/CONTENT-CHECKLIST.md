@@ -57,12 +57,12 @@ For each project to keep: real title and summary, problem and context, personal 
 - [ ] GitHub URL (or leave unavailable)
 - [ ] Résumé PDF (or leave unavailable)
 
-## Lab
+## Lab and example figure
 
-- [ ] Keep the three demos? (They are labelled as simulated and make no claims about his work.)
-- [ ] Architecture explorer example: keep as a generic demonstration, or replace with a system he actually built.
+- [ ] Keep the signal lab? (Labelled as simulated; makes no claims about his work.)
+- [ ] Example system figure (Approach sheet): keep as a generic demonstration, replace with a system he actually built, or remove.
 
 ## Before launch
 
 - [ ] Remove `public/robots.txt` "Disallow" and the `noindex` meta tag in `index.html`.
-- [ ] Remove "(review draft)" from the page title in `index.html` and "Review draft · Rev A" in `src/components/Footer.tsx`.
+- [ ] Remove "(review draft)" from the page title in `index.html` and "A · Review draft" in `src/components/Footer.tsx` and `src/components/Nav.tsx`.

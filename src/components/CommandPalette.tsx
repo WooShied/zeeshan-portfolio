@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { experience, links, projects, sections } from "../content/site";
 import { emit, EV, goToSection, setHash } from "../lib";
-import { LAB_TABS } from "../sections/Lab";
 
 interface Cmd {
   id: string;
@@ -20,7 +19,7 @@ function buildCommands(): Cmd[] {
       id: `sec-${s.id}`,
       group: "Sections",
       label: s.id === "top" ? "Back to the board (top)" : s.label,
-      hint: s.addr,
+      hint: `Sheet ${s.sheet}`,
       keywords: "go navigate section",
       run: () => goToSection(s.id),
     }),
@@ -42,16 +41,6 @@ function buildCommands(): Cmd[] {
       label: `${r.title} · ${r.company}`,
       keywords: `role job experience ${r.employmentType}`,
       run: () => goToSection("experience", r.id),
-    }),
-  );
-  LAB_TABS.forEach((t) =>
-    cmds.push({
-      id: `lab-${t.id}`,
-      group: "Interactive lab",
-      label: `Open ${t.label.toLowerCase()}`,
-      hint: t.probe,
-      keywords: "lab demo simulation instrument",
-      run: () => goToSection("lab", t.id),
     }),
   );
   links.forEach((l) =>
