@@ -3,9 +3,9 @@ import { SectionHeader } from "../components/SectionHeader";
 import { useHash, useInView } from "../hooks";
 import { scrollToId } from "../lib";
 
-const SignalLab = lazy(() => import("../lab/SignalLab"));
+const LidarLab = lazy(() => import("../lab/LidarLab"));
 
-/** One instrument on the bench: the signal sampling demo, loaded when near. */
+/** One instrument on the bench: the LiDAR mapping demo, loaded when near. */
 export function Lab() {
   const ref = useRef<HTMLElement>(null);
   const near = useInView(ref, "600px 0px", true);
@@ -21,18 +21,18 @@ export function Lab() {
       <div className="wrap">
         <SectionHeader
           id="lab"
-          title="Signal lab"
+          title="LiDAR lab"
           lede={
             <p>
-              A small instrument that runs entirely in your browser. It shows how this site behaves; it is not a measurement
-              from Zeeshan’s work.
+              A real-time mapping simulation that runs entirely in your browser: ray-traced LiDAR, pose registration and
+              voxel fusion. It shows what this site can do; it is not data from Zeeshan’s work.
             </p>
           }
         />
         <div className="bench" data-reveal>
           {near ? (
             <Suspense fallback={<p className="bench__loading mono">Loading instrument…</p>}>
-              <SignalLab />
+              <LidarLab />
             </Suspense>
           ) : (
             <p className="bench__loading mono">Instrument loads when this section is in view.</p>

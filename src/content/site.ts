@@ -89,6 +89,8 @@ export const links: LinkItem[] = [
 
 /* ── About ────────────────────────────────────────────────── */
 export const about = {
+  /** Portrait: put the photo in public/ (e.g. public/zeeshan.jpg) and set src to "./zeeshan.jpg". */
+  portrait: { src: null as string | null, alt: "Portrait of Zeeshan Malik" },
   paragraphs: [
     {
       text: "I’m interested in building reliable software that connects computation to the physical world. My interests span robotics, embedded systems, device communication, and the tools used to test and understand complex systems.",
@@ -369,7 +371,7 @@ export const boardMap = [
   { id: "cpu", ref: "FC1", name: "Flight controller", section: "about", sectionLabel: "About", blurb: "The brain of the airframe: who Zeeshan is and what he’s interested in." },
   { id: "mem", ref: "LOG", name: "Blackbox logger", section: "experience", sectionLabel: "Experience", blurb: "Every flight gets logged. Five roles, recorded in order." },
   { id: "io", ref: "CAM", name: "Camera payload", section: "projects", sectionLabel: "Projects", blurb: "What the system is built to capture: the case studies." },
-  { id: "dbg", ref: "USB", name: "Debug port", section: "lab", sectionLabel: "Signal lab", blurb: "Plug in a probe and watch a signal alias." },
+  { id: "dbg", ref: "USB", name: "Debug port", section: "lab", sectionLabel: "LiDAR lab", blurb: "Plug in and watch a city get mapped in 3D, point by point." },
   { id: "rf", ref: "RX", name: "Telemetry radio", section: "contact", sectionLabel: "Contact", blurb: "Open a link. LinkedIn is live." },
 ] as const;
 
@@ -379,7 +381,7 @@ export const sections = [
   { id: "projects", label: "Projects", short: "Projects", sheet: "02", kicker: "Drawing register" },
   { id: "experience", label: "Experience", short: "Experience", sheet: "03", kicker: "Logic capture" },
   { id: "approach", label: "Approach", short: "Approach", sheet: "04", kicker: "General notes" },
-  { id: "lab", label: "Signal lab", short: "Lab", sheet: "05", kicker: "Test bench" },
+  { id: "lab", label: "LiDAR lab", short: "LiDAR lab", sheet: "05", kicker: "Test bench" },
   { id: "about", label: "About", short: "About", sheet: "06", kicker: "Datasheet" },
   { id: "contact", label: "Contact", short: "Contact", sheet: "07", kicker: "Interface" },
 ] as const;

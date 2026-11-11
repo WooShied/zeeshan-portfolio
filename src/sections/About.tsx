@@ -27,6 +27,13 @@ export function About() {
             </div>
 
             <aside className="ds__facts" aria-labelledby="facts-title">
+              <figure className="ds__portrait">
+                {about.portrait.src ? (
+                  <img src={about.portrait.src} alt={about.portrait.alt} loading="lazy" />
+                ) : (
+                  <figcaption className="ds__portrait-note mono">Portrait to be supplied</figcaption>
+                )}
+              </figure>
               <p id="facts-title" className="ds__section mono">
                 2 · Key facts
               </p>

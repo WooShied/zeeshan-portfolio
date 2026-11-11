@@ -13,7 +13,7 @@ Everything below is draft, inferred, or missing. Each item is labelled on the si
 - [ ] About paragraph (`about.paragraphs[0]`): "I'm interested in building reliable software that connects computation to the physical world…"
 - [ ] Where he's based (`about.facts` → "Based in"). Not inferred from any employer location.
 - [ ] Education (`about.facts` → "Education"), or remove the row.
-- [ ] Portrait (optional; none is used yet).
+- [ ] Portrait: supply a photo (a framed slot on the About sheet says "Portrait to be supplied").
 
 ## Experience (titles, companies, types and dates are as supplied; only descriptions need work)
 
@@ -59,7 +59,7 @@ For each project to keep: real title and summary, problem and context, personal 
 
 ## Lab and example figure
 
-- [ ] Keep the signal lab? (Labelled as simulated; makes no claims about his work.)
+- [ ] Keep the LiDAR mapping lab? (Labelled as simulated; makes no claims about his work.)
 - [ ] Example system figure (Approach sheet): keep as a generic demonstration, replace with a system he actually built, or remove.
 
 ## Before launch

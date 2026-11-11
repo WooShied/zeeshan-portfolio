@@ -565,3 +565,222 @@ input[type="range"]:focus-visible::-moz-range-thumb {
 .flow__hint {
   color: var(--mute);
 }
+
+/* ── LiDAR lab ───────────────────────────────────────────── */
+.lidar__screen {
+  /* a dark instrument screen in both themes */
+  --fg: #ede7dc;
+  --mute: #9a958b;
+  --sig: #5fd4cc;
+  position: relative;
+  height: clamp(400px, 52vw, 640px);
+  border: 1px solid var(--line-3);
+  background: #05080a;
+  overflow: hidden;
+  color: var(--fg);
+}
+.lidar__host {
+  position: absolute;
+  inset: 0;
+}
+.lidar__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+.lidar__canvas:active {
+  cursor: grabbing;
+}
+.lidar__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--mute);
+}
+.lidar__hud {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: rgba(237, 231, 220, 0.72);
+  background: linear-gradient(180deg, rgba(5, 8, 10, 0.78), rgba(5, 8, 10, 0.35));
+  border: 1px solid rgba(95, 212, 204, 0.22);
+  pointer-events: none;
+  backdrop-filter: blur(3px);
+}
+.lidar__hud b {
+  color: #5fd4cc;
+  font-weight: 500;
+}
+.lidar__hud--tl {
+  top: 12px;
+  left: 12px;
+}
+.lidar__hud--tr {
+  top: 12px;
+  right: 12px;
+  text-align: right;
+  align-items: flex-end;
+}
+.lidar__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ede7dc;
+}
+.lidar__brand .led-dot {
+  animation: blink 1s steps(1) infinite;
+}
+.lidar__cov {
+  width: 140px;
+  height: 3px;
+  margin-top: 4px;
+  background: rgba(237, 231, 220, 0.12);
+}
+.lidar__cov span {
+  display: block;
+  height: 100%;
+  background: #5fd4cc;
+  transform-origin: left;
+  transition: transform 0.4s;
+}
+.lidar__legend {
+  position: absolute;
+  z-index: 2;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 0.66rem;
+  color: rgba(237, 231, 220, 0.75);
+  background: rgba(5, 8, 10, 0.7);
+  border: 1px solid rgba(95, 212, 204, 0.22);
+  pointer-events: none;
+}
+.lidar__legk {
+  color: #ede7dc;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.lidar__ramp {
+  width: 140px;
+  height: 8px;
+}
+.lidar__ramp--turbo {
+  background: linear-gradient(90deg, #30123b, #4662d7, #36aaf9, #1ae4b6, #72fe5e, #c8ef34, #faba39, #f66b19, #ca2a04, #7a0403);
+}
+.lidar__ramp--turbo-rev {
+  background: linear-gradient(90deg, #7a0403, #ca2a04, #f66b19, #faba39, #c8ef34, #72fe5e, #1ae4b6, #36aaf9, #4662d7, #30123b);
+}
+.lidar__ramp--inten {
+  background: linear-gradient(90deg, #141d22, #4f8783, #c4f3ed);
+}
+.lidar__classes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+}
+.lidar__classes i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+}
+.lidar__zoom {
+  position: absolute;
+  z-index: 2;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(95, 212, 204, 0.35);
+  background: rgba(5, 8, 10, 0.7);
+}
+.lidar__zoom button {
+  width: 34px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  color: #ede7dc;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.lidar__zoom button + button {
+  border-top: 1px solid rgba(95, 212, 204, 0.25);
+}
+.lidar__zoom button:hover {
+  background: rgba(95, 212, 204, 0.15);
+}
+.lidar__drag {
+  position: absolute;
+  z-index: 2;
+  right: 58px;
+  bottom: 16px;
+  font-size: 0.64rem;
+  color: rgba(237, 231, 220, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+.lidar__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 24px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--line-2);
+}
+.lidar__group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.lidar__group legend {
+  margin-bottom: 8px;
+}
+.lidar__slider {
+  min-width: 180px;
+  flex: 1 1 180px;
+}
+.lidar__toggles {
+  display: flex;
+  gap: 16px;
+}
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  font-size: 0.86rem;
+  color: var(--fg-2);
+  cursor: pointer;
+}
+.check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--sig);
+}
+@media (max-width: 700px) {
+  .lidar__hud--tr {
+    display: none;
+  }
+  .lidar__screen {
+    height: 420px;
+  }
+  .lidar__ramp {
+    width: 90px;
+  }
+}

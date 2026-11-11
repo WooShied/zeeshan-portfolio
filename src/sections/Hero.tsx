@@ -15,16 +15,15 @@ export function Hero() {
           <span>General arrangement</span>
         </p>
 
-        <div className="hero__head">
-          <h1 id="hero-name" className="hero__name">
-            <span>{first}</span> <span>{rest.join(" ")}</span>
-          </h1>
-
-          <div className="hero__lede">
-            <div className="hero__item">
+        <Board>
+          <div className="hero__copy">
+            <div className="hero__pos-row">
               <p className="hero__pos mono">{identity.positioning.text}</p>
               <StatusTag status={identity.positioning.status} />
             </div>
+            <h1 id="hero-name" className="hero__name">
+              <span>{first}</span> <span>{rest.join(" ")}</span>
+            </h1>
             <div className="hero__item">
               <p className="hero__headline">{identity.headline.text}</p>
               <StatusTag status={identity.headline.status} />
@@ -50,9 +49,7 @@ export function Hero() {
               </button>
             </div>
           </div>
-        </div>
-
-        <Board />
+        </Board>
       </div>
     </section>
   );

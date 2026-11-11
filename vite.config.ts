@@ -5,6 +5,15 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   base: "./",
   plugins: [react()],
+  build: {
+    // three.js is a deferred chunk (loaded after first paint), so its size is expected.
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => (id.includes("node_modules/three") ? "three" : undefined),
+      },
+    },
+  },
   define: {
     __BUILD_DATE__: JSON.stringify(new Date().toISOString()),
   },
